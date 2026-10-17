@@ -1,4 +1,4 @@
-# Реальное сравнение Kubescape NSA
+# Сравнение Kubescape NSA
 
 Kubescape 4.0.16; до 2026-10-17T12:51:53Z, после 2026-10-17T12:53:21Z (UTC).
 
@@ -40,6 +40,6 @@ FAIL/OK — статусы controls всего локального класте
 | C-0271: Ensure memory limits are set | failed → failed | 1 → 1 |
 | C-0292: Nginx Ingress Controller End of Life | passed → passed | 0 → 0 |
 
-Ограничения: host-scan отключён; C-0069/C-0070 не оценены без operator KubeletInfo; облачный provider отсутствует. В повторном запуске --use-from использует исходный nsa.json; exceptions/controlInputs взяты из bundled defaults из-за отсутствия локальных файлов (см. лог). Поэтому сравнение отражает наблюдение, но не является строгим сертификационным измерением при полностью зафиксированных inputs.
+Ограничения: host-scan отключён; C-0069/C-0070 не оценены без operator KubeletInfo; облачный provider отсутствует. В повторном запуске --use-from использует исходный nsa.json; exceptions/controlInputs взяты из bundled defaults из-за отсутствия локальных файлов (см. лог). Дополнительные policy inputs в двух запусках различались.
 
-JSON сохранён с редактированием Secret data и last-applied annotation; статусы/счётчики не менялись. Исходные JSON доступны только в игнорируемой .local/.
+Значения Secret и last-applied annotations скрыты; статусы и счётчики сохранены.
