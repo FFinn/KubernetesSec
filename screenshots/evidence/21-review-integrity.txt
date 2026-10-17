@@ -1,0 +1,9 @@
+PASS: all requirement-document local links resolve
+PASS: .local/.idea/.venv excluded from candidate submission
+PASS: no PEM private keys or kubeconfig credential fields in candidate files
+PASS: .local=0700; kubeconfig and raw scans=0600
+PASS: matching 26 NSA control IDs in preserved before/after
+PASS: all shell scripts parsed with bash -n; Python files compiled
+No commits or publication performed.
+SHA256 screenshots/evidence/kubescape-before.json: f584e41e2c570577197b5ec1ab76eb805f0a1e3e5b96a54a3915eb91e6880bfc
+SHA256 screenshots/evidence/kubescape-after.json: c16ee440abdb2c42b42ba608a7df1eee24496d00a03b42c25ea8d36150cf4f3d

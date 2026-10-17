@@ -1,0 +1,24 @@
+[36mINFO[0m[0000] Prep: Network                                
+[36mINFO[0m[0000] Created network 'k3d-devsecops-lab'          
+[36mINFO[0m[0000] Created image volume k3d-devsecops-lab-images 
+[36mINFO[0m[0000] Starting new tools node...                   
+[36mINFO[0m[0001] Creating node 'k3d-devsecops-lab-server-0'   
+[36mINFO[0m[0001] Pulling image 'ghcr.io/k3d-io/k3d-tools:5.9.0' 
+[36mINFO[0m[0003] Pulling image 'rancher/k3s:v1.34.5-k3s1'     
+[36mINFO[0m[0006] Starting node 'k3d-devsecops-lab-tools'      
+[36mINFO[0m[0013] Using the k3d-tools node to gather environment information 
+[36mINFO[0m[0013] Starting new tools node...                   
+[36mINFO[0m[0013] Starting node 'k3d-devsecops-lab-tools'      
+[36mINFO[0m[0014] Starting cluster 'devsecops-lab'             
+[36mINFO[0m[0014] Starting servers...                          
+[36mINFO[0m[0014] Starting node 'k3d-devsecops-lab-server-0'   
+[36mINFO[0m[0020] All agents already running.                  
+[36mINFO[0m[0020] All helpers already running.                 
+[36mINFO[0m[0020] Injecting records for hostAliases (incl. host.k3d.internal) and for 2 network members into CoreDNS configmap... 
+[36mINFO[0m[0022] Cluster 'devsecops-lab' created successfully! 
+[36mINFO[0m[0022] You can now use it like this:                
+export KUBECONFIG=$(k3d kubeconfig write devsecops-lab)
+kubectl cluster-info
+node/k3d-devsecops-lab-server-0 condition met
+NAME                         STATUS   ROLES           AGE   VERSION        INTERNAL-IP     EXTERNAL-IP   OS-IMAGE           KERNEL-VERSION     CONTAINER-RUNTIME
+k3d-devsecops-lab-server-0   Ready    control-plane   3s    v1.34.5+k3s1   192.168.112.3   <none>        K3s v1.34.5+k3s1   6.12.76-linuxkit   containerd://2.1.5-k3s1

@@ -1,0 +1,66 @@
+namespace/frontend unchanged (server dry run)
+namespace/backend unchanged (server dry run)
+namespace/outsider unchanged (server dry run)
+serviceaccount/frontend-sa unchanged (server dry run)
+role.rbac.authorization.k8s.io/frontend-reader unchanged (server dry run)
+rolebinding.rbac.authorization.k8s.io/frontend-reader unchanged (server dry run)
+secret/db-secret unchanged (server dry run)
+secret/db-secret unchanged (server dry run)
+deployment.apps/frontend unchanged (server dry run)
+deployment.apps/backend unchanged (server dry run)
+service/backend unchanged (server dry run)
+networkpolicy.networking.k8s.io/default-deny unchanged (server dry run)
+networkpolicy.networking.k8s.io/default-deny unchanged (server dry run)
+networkpolicy.networking.k8s.io/frontend-egress unchanged (server dry run)
+networkpolicy.networking.k8s.io/backend-ingress unchanged (server dry run)
+PASS: running Pods, Secret refs, RBAC cleanup, ConfigMap cleanup, PSA labels, NetworkPolicy objects
+Context=k3d-devsecops-lab UTC=2026-10-17T13:00:09Z
+pod/outsider-probe unchanged
+pod/outsider-probe condition met
+deployment "frontend" successfully rolled out
+deployment "backend" successfully rolled out
+PASS source container and nc available
+PASS source container and nc available
+networkpolicy.networking.k8s.io/default-deny unchanged
+networkpolicy.networking.k8s.io/default-deny unchanged
+networkpolicy.networking.k8s.io/frontend-egress unchanged
+networkpolicy.networking.k8s.io/backend-ingress unchanged
+COMPLETED_TCP_PROBE rc=1 elapsed=1s
+PASS outsider (app=frontend, wrong namespace) -> backend:5432 BLOCKED (completed nc, exit=1)
+DNS lookup from frontend:
+Server:		10.43.0.10
+Address:	10.43.0.10:53
+
+Name:	backend.backend.svc.cluster.local
+Address: 10.43.119.104
+
+
+frontend -> backend:5432 = lab-backend
+frontend listener control = lab-frontend
+COMPLETED_TCP_PROBE rc=1 elapsed=1s
+PASS backend -> frontend:8080 BLOCKED (completed nc, exit=1)
+NAMESPACE   NAME              POD-SELECTOR   AGE
+backend     backend-ingress   app=backend    7m21s
+backend     default-deny      <none>         7m21s
+frontend    default-deny      <none>         7m21s
+frontend    frontend-egress   app=frontend   7m21s
+NAME          STATUS   AGE   LABELS
+kube-system   Active   19m   kubernetes.io/metadata.name=kube-system
+NAME                       READY   STATUS    RESTARTS   AGE   LABELS
+coredns-695cbbfcb9-8d9vn   1/1     Running   0          19m   k8s-app=kube-dns,pod-template-hash=695cbbfcb9
+=== frontend: pod / SA / container / privileged ===
+frontend-8686b9777-wz2qh	frontend-sa	frontend privileged=false
+=== frontend: ConfigMap names and keys (values suppressed) ===
+=== frontend: deployment env sources (values suppressed) ===
+frontend
+DB_PASSWORD plaintext= secret=db-secret configmap=
+DB_USERNAME plaintext= secret=db-secret configmap=
+=== backend: pod / SA / container / privileged ===
+backend-74f4946f97-nqgq5	default	backend privileged=false
+=== backend: ConfigMap names and keys (values suppressed) ===
+=== backend: deployment env sources (values suppressed) ===
+backend
+DB_PASSWORD plaintext= secret=db-secret configmap=
+DB_USERNAME plaintext= secret=db-secret configmap=
+=== Lab ClusterRole rules ===
+=== Lab binding subjects ===

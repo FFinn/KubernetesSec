@@ -1,0 +1,220 @@
+{
+  "apiVersion": "v1",
+  "kind": "Secret",
+  "metadata": {
+    "name": "db-secret",
+    "namespace": "frontend"
+  },
+  "type": "Opaque",
+  "data": {
+    "username": "ZGVtb191c2Vy",
+    "password": "REVNT19PTkxZX3Bhc3N3b3JkXzIwMjY="
+  }
+}
+---
+{
+  "apiVersion": "v1",
+  "kind": "Secret",
+  "metadata": {
+    "name": "db-secret",
+    "namespace": "backend"
+  },
+  "type": "Opaque",
+  "data": {
+    "username": "ZGVtb191c2Vy",
+    "password": "REVNT19PTkxZX3Bhc3N3b3JkXzIwMjY="
+  }
+}
+---
+{
+  "apiVersion": "apps/v1",
+  "kind": "Deployment",
+  "metadata": {
+    "name": "frontend",
+    "namespace": "frontend"
+  },
+  "spec": {
+    "replicas": 1,
+    "selector": {
+      "matchLabels": {
+        "app": "frontend"
+      }
+    },
+    "template": {
+      "metadata": {
+        "labels": {
+          "app": "frontend"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "frontend",
+            "image": "busybox:1.37.0",
+            "command": [
+              "sh",
+              "-c",
+              "while true; do nc -l -p 8080 -e echo lab-frontend; done"
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "16Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "64Mi"
+              }
+            },
+            "env": [
+              {
+                "name": "DB_PASSWORD",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "db-secret",
+                    "key": "password"
+                  }
+                }
+              },
+              {
+                "name": "DB_USERNAME",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "db-secret",
+                    "key": "username"
+                  }
+                }
+              }
+            ],
+            "securityContext": {
+              "privileged": false,
+              "allowPrivilegeEscalation": false,
+              "readOnlyRootFilesystem": true,
+              "capabilities": {
+                "drop": [
+                  "ALL"
+                ]
+              }
+            }
+          }
+        ],
+        "automountServiceAccountToken": false,
+        "securityContext": {
+          "runAsNonRoot": true,
+          "runAsUser": 10001,
+          "runAsGroup": 10001,
+          "seccompProfile": {
+            "type": "RuntimeDefault"
+          }
+        },
+        "serviceAccountName": "frontend-sa"
+      }
+    }
+  }
+}
+---
+{
+  "apiVersion": "apps/v1",
+  "kind": "Deployment",
+  "metadata": {
+    "name": "backend",
+    "namespace": "backend"
+  },
+  "spec": {
+    "replicas": 1,
+    "selector": {
+      "matchLabels": {
+        "app": "backend"
+      }
+    },
+    "template": {
+      "metadata": {
+        "labels": {
+          "app": "backend"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "backend",
+            "image": "busybox:1.37.0",
+            "command": [
+              "sh",
+              "-c",
+              "while true; do nc -l -p 5432 -e echo lab-backend; done"
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "16Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "64Mi"
+              }
+            },
+            "env": [
+              {
+                "name": "DB_PASSWORD",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "db-secret",
+                    "key": "password"
+                  }
+                }
+              },
+              {
+                "name": "DB_USERNAME",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "db-secret",
+                    "key": "username"
+                  }
+                }
+              }
+            ],
+            "securityContext": {
+              "privileged": false,
+              "allowPrivilegeEscalation": false,
+              "readOnlyRootFilesystem": true,
+              "capabilities": {
+                "drop": [
+                  "ALL"
+                ]
+              }
+            }
+          }
+        ],
+        "automountServiceAccountToken": false,
+        "securityContext": {
+          "runAsNonRoot": true,
+          "runAsUser": 10001,
+          "runAsGroup": 10001,
+          "seccompProfile": {
+            "type": "RuntimeDefault"
+          }
+        }
+      }
+    }
+  }
+}
+---
+{
+  "apiVersion": "v1",
+  "kind": "Service",
+  "metadata": {
+    "name": "backend",
+    "namespace": "backend"
+  },
+  "spec": {
+    "selector": {
+      "app": "backend"
+    },
+    "ports": [
+      {
+        "port": 5432,
+        "targetPort": 5432
+      }
+    ]
+  }
+}

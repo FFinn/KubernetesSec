@@ -1,0 +1,45 @@
+namespace/frontend unchanged (server dry run)
+namespace/backend unchanged (server dry run)
+namespace/outsider unchanged (server dry run)
+serviceaccount/frontend-sa unchanged (server dry run)
+role.rbac.authorization.k8s.io/frontend-reader unchanged (server dry run)
+rolebinding.rbac.authorization.k8s.io/frontend-reader unchanged (server dry run)
+secret/db-secret unchanged (server dry run)
+secret/db-secret unchanged (server dry run)
+deployment.apps/frontend unchanged (server dry run)
+deployment.apps/backend unchanged (server dry run)
+service/backend unchanged (server dry run)
+networkpolicy.networking.k8s.io/default-deny unchanged (server dry run)
+networkpolicy.networking.k8s.io/default-deny unchanged (server dry run)
+networkpolicy.networking.k8s.io/frontend-egress unchanged (server dry run)
+networkpolicy.networking.k8s.io/backend-ingress unchanged (server dry run)
+PASS: running Pods, Secret refs, RBAC cleanup, ConfigMap cleanup, PSA labels, NetworkPolicy objects
+Context=k3d-devsecops-lab UTC=2026-10-17T12:59:37Z
+pod/outsider-probe unchanged
+pod/outsider-probe condition met
+deployment "frontend" successfully rolled out
+deployment "backend" successfully rolled out
+PASS source container and nc available
+PASS source container and nc available
+networkpolicy.networking.k8s.io/default-deny unchanged
+networkpolicy.networking.k8s.io/default-deny unchanged
+networkpolicy.networking.k8s.io/frontend-egress unchanged
+networkpolicy.networking.k8s.io/backend-ingress unchanged
+command terminated with exit code 1
+FAIL probe execution: COMPLETED_TCP_PROBE rc=1 elapsed=1s
+command terminated with exit code 1
+FAIL probe execution: COMPLETED_TCP_PROBE rc=1 elapsed=1s
+COMPLETED_TCP_PROBE rc=1 elapsed=2s
+PASS outsider (app=frontend, wrong namespace) -> backend:5432 BLOCKED (completed nc timeout)
+DNS lookup from frontend:
+Server:		10.43.0.10
+Address:	10.43.0.10:53
+
+
+Name:	backend.backend.svc.cluster.local
+Address: 10.43.119.104
+
+frontend -> backend:5432 = lab-backend
+frontend listener control = lab-frontend
+command terminated with exit code 1
+FAIL probe execution: COMPLETED_TCP_PROBE rc=1 elapsed=1s

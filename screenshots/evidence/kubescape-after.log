@@ -1,0 +1,94 @@
+{"level":"info","ts":"2026-10-17T17:53:20+05:00","msg":"Kubescape scanner initializing..."}
+{"level":"info","ts":"2026-10-17T17:53:20+05:00","msg":"Initialized scanner"}
+{"level":"info","ts":"2026-10-17T17:53:20+05:00","msg":"Loading policies..."}
+{"level":"info","ts":"2026-10-17T17:53:20+05:00","msg":"Loaded policies"}
+{"level":"info","ts":"2026-10-17T17:53:20+05:00","msg":"Loading exceptions..."}
+{"level":"info","ts":"2026-10-17T17:53:20+05:00","msg":"Failed to load exceptions","error":"open /Users/alexandrvafin/PycharmProjects/KubernetesSec/.local/kubescape-cache/exceptions.json: no such file or directory"}
+{"level":"info","ts":"2026-10-17T17:53:20+05:00","msg":"Loading account configurations..."}
+{"level":"info","ts":"2026-10-17T17:53:20+05:00","msg":"Failed to load account configurations","error":"error opening controls-inputs.json file, \"controls-config\" will be downloaded from ARMO management portal"}
+{"level":"info","ts":"2026-10-17T17:53:21+05:00","msg":"Accessing Kubernetes objects..."}
+{"level":"warn","ts":"2026-10-17T17:53:21+05:00","msg":"resource was not found in Kubernetes discovery; skipping live query","apiGroup":"policy","apiVersion":"*","resource":"PodSecurityPolicy"}
+{"level":"warn","ts":"2026-10-17T17:53:21+05:00","msg":"resource was not found in Kubernetes discovery; skipping live query","apiGroup":"cilium.io","apiVersion":"v2","resource":"CiliumNetworkPolicy"}
+{"level":"warn","ts":"2026-10-17T17:53:21+05:00","msg":"resource was not found in Kubernetes discovery; skipping live query","apiGroup":"cilium.io","apiVersion":"v2","resource":"CiliumClusterwideNetworkPolicy"}
+{"level":"info","ts":"2026-10-17T17:53:21+05:00","msg":"Accessed Kubernetes objects"}
+{"level":"info","ts":"2026-10-17T17:53:21+05:00","msg":"Scanning","Cluster":"k3d-devsecops-lab"}
+{"level":"info","ts":"2026-10-17T17:53:21+05:00","msg":"Done scanning","Cluster":"k3d-devsecops-lab"}
+{"level":"info","ts":"2026-10-17T17:53:21+05:00","msg":"Done aggregating results"}
+
+──────────────────────────────────────────────────
+
+Framework scanned: NSA
+
+╭─────────────────┬────╮
+│        Controls │ 26 │
+│          Passed │ 10 │
+│          Failed │ 11 │
+│ Action Required │ 5  │
+╰─────────────────┴────╯
+
+Failed resources by severity:
+
+╭──────────┬────╮
+│ Critical │ 0  │
+│     High │ 3  │
+│   Medium │ 18 │
+│      Low │ 2  │
+╰──────────┴────╯
+
+Run with '--verbose'/'-v' to see control failures for each resource.
+
+╭──────────┬────────────────────────────────────────────────────┬──────────────────┬───────────────┬────────────────────╮
+│ Severity │ Control name                                       │ Failed resources │ All Resources │ Compliance score   │
+├──────────┼────────────────────────────────────────────────────┼──────────────────┼───────────────┼────────────────────┤
+│ Critical │ Disable anonymous access to Kubelet service        │         0        │       0       │ Action Required ** │
+│ Critical │ Enforce Kubelet client TLS authentication          │         0        │       0       │ Action Required ** │
+│   High   │ Ensure CPU limits are set                          │         2        │       5       │         60%        │
+│   High   │ Ensure memory limits are set                       │         1        │       5       │         80%        │
+│  Medium  │ Prevent containers from allowing command execution │         1        │       69      │         99%        │
+│  Medium  │ Non-root containers                                │         3        │       5       │         40%        │
+│  Medium  │ Allow privilege escalation                         │         1        │       5       │         80%        │
+│  Medium  │ Ingress and Egress blocked                         │         3        │       9       │         67%        │
+│  Medium  │ Automatic mapping of service account               │         2        │       50      │         96%        │
+│  Medium  │ Administrative Roles                               │         1        │       69      │         99%        │
+│  Medium  │ Cluster internal networking                        │         5        │       7       │         29%        │
+│  Medium  │ Linux hardening                                    │         2        │       5       │         60%        │
+│  Medium  │ Secret/etcd encryption enabled                     │         0        │       0       │  Action Required * │
+│  Medium  │ Audit logs enabled                                 │         0        │       0       │  Action Required * │
+│    Low   │ Immutable container filesystem                     │         2        │       5       │         60%        │
+│    Low   │ PSP enabled                                        │         0        │       0       │  Action Required * │
+├──────────┼────────────────────────────────────────────────────┼──────────────────┼───────────────┼────────────────────┤
+│          │                  Resource Summary                  │         9        │      142      │       68.01%       │
+╰──────────┴────────────────────────────────────────────────────┴──────────────────┴───────────────┴────────────────────╯
+
+🚨 * failed to get cloud provider, cluster: k3d-devsecops-lab
+🚨 ** missing: hostdata.kubescape.cloud/v1beta0/KubeletInfo
+
+────────────────────────────────────────────────────────────────────────────────
+Scan Coverage Warning
+────────────────────────────────────────────────────────────────────────────────
+
+Scan coverage score: 73% (24/26 controls evaluated)
+
+The following resource types could not be collected:
+  • container.googleapis.com/v1/ClusterDescribe: failed to get cloud provider, cluster: k3d-devsecops-lab
+  • eks.amazonaws.com/v1/ClusterDescribe: failed to get cloud provider, cluster: k3d-devsecops-lab
+  • hostdata.kubescape.cloud/v1beta0/KubeletInfo: This control is scanned exclusively by the Kubescape operator, not the Kubescape CLI. Install the Kubescape operator:
+     https://kubescape.io/docs/install-operator/.
+  • management.azure.com/v1/ClusterDescribe: failed to get cloud provider, cluster: k3d-devsecops-lab
+
+The following controls were NOT evaluated:
+  • C-0069 (missing: hostdata.kubescape.cloud/v1beta0/KubeletInfo)
+  • C-0070 (missing: hostdata.kubescape.cloud/v1beta0/KubeletInfo)
+
+The following policy inputs could not be loaded and were served from bundled defaults:
+  • exceptions: open /Users/alexandrvafin/PycharmProjects/KubernetesSec/.local/kubescape-cache/exceptions.json: no such file or directory
+  • controlInputs: error opening controls-inputs.json file, "controls-config" will be downloaded from ARMO management portal
+
+Controls depending on these inputs were evaluated against default configuration, which may not reflect your environment.
+
+To fix this, ensure the scanning identity has list/get permissions on the missing resource types.
+
+To fix this, ensure network access to the policy input source, or use --fail-on-degraded-config to fail the scan instead of using bundled defaults.
+{"level":"info","ts":"2026-10-17T17:53:21+05:00","msg":"Scan results saved","filename":"/Users/alexandrvafin/PycharmProjects/KubernetesSec/.local/kubescape-after.raw.json"}
+
+Overall compliance-score (100- Excellent, 0- All failed): 68

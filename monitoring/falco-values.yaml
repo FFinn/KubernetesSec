@@ -1,0 +1,43 @@
+driver:
+  kind: modern_ebpf
+  loader:
+    enabled: false
+collectors:
+  enabled: false
+falcoctl:
+  artifact:
+    install:
+      enabled: false
+    follow:
+      enabled: false
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+falco:
+  json_output: true
+  rules_files:
+    - /etc/falco/rules.d/lab.yaml
+customRules:
+  lab.yaml: |-
+    - rule: DevSecOps Lab Shell Marker
+      desc: Detect the explicitly marked harmless shell execution in this lab
+      condition: evt.type in (execve, execveat) and evt.dir=< and proc.name=sh and proc.cmdline contains DEVSECOPS_LAB_EVENT
+      output: "Lab shell execution detected (pid=%proc.pid command=%proc.cmdline)"
+      priority: NOTICE
+      tags: [devsecops_lab]
+falcosidekick:
+  enabled: true
+  replicaCount: 1
+  config:
+    debug: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi

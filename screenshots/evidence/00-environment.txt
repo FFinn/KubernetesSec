@@ -1,0 +1,14 @@
+Client Version: v1.34.5
+Kustomize Version: v5.7.1
+Server Version: v1.34.5+k3s1
+k3d version v5.9.0
+k3s version v1.35.5-k3s1 (default)
+v4.2.3+g43e8b7f
+Your current version is: 4.0.16
+Build commit: d0ea07bcd9d7ab1640dcd6527d0e68a34f10da0e
+Build date: 2026-10-14T10:43:18Z
+Darwin 25.6.0 arm64
+34359738368
+10
+Docker=29.5.2 OS=Docker Desktop Arch=aarch64 CPUs=10 Memory=8217059328
+LabMemoryLimit=3221225472

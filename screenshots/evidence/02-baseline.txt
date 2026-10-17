@@ -1,0 +1,17 @@
+namespace/frontend created
+namespace/backend created
+namespace/outsider created
+configmap/db-config created
+deployment.apps/frontend created
+deployment.apps/backend created
+service/backend created
+clusterrole.rbac.authorization.k8s.io/lab-unsafe-wildcard created
+clusterrolebinding.rbac.authorization.k8s.io/lab-unsafe-default created
+Waiting for deployment "frontend" rollout to finish: 0 of 1 updated replicas are available...
+deployment "frontend" successfully rolled out
+deployment "backend" successfully rolled out
+NAMESPACE     NAME                                      READY   STATUS    RESTARTS   AGE   IP          NODE                         NOMINATED NODE   READINESS GATES
+backend       backend-686f678c4-wr2mj                   1/1     Running   0          6s    10.42.0.5   k3d-devsecops-lab-server-0   <none>           <none>
+frontend      frontend-867bdc8454-pklsc                 1/1     Running   0          6s    10.42.0.4   k3d-devsecops-lab-server-0   <none>           <none>
+kube-system   coredns-695cbbfcb9-8d9vn                  1/1     Running   0          10m   10.42.0.3   k3d-devsecops-lab-server-0   <none>           <none>
+kube-system   local-path-provisioner-546dfc6456-d6h8f   1/1     Running   0          10m   10.42.0.2   k3d-devsecops-lab-server-0   <none>           <none>

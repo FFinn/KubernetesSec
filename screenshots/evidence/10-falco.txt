@@ -1,0 +1,19 @@
+Release "devsecops-falco" does not exist. Installing it now.
+NAME: devsecops-falco
+LAST DEPLOYED: Sat Oct 17 17:53:55 2026
+NAMESPACE: falco
+STATUS: deployed
+REVISION: 1
+DESCRIPTION: Install complete
+NOTES:
+Falco agents are spinning up on each node in your cluster. After a few
+seconds, they are going to start monitoring your containers looking for
+security issues.
+NAME                                             READY   STATUS    RESTARTS   AGE   IP           NODE                         NOMINATED NODE   READINESS GATES
+devsecops-falco-falcosidekick-68d9989cf4-t9jbk   1/1     Running   0          29s   10.42.0.12   k3d-devsecops-lab-server-0   <none>           <none>
+devsecops-falco-wj4tp                            1/1     Running   0          29s   10.42.0.13   k3d-devsecops-lab-server-0   <none>           <none>
+    rule 'DevSecOps Lab Shell Marker': (/etc/falco/rules.d/lab.yaml:0:2)
+{"hostname":"k3d-devsecops-lab-server-0","output":"12:54:25.215430014: Notice Lab shell execution detected (pid=75801 command=sh -c echo DEVSECOPS_LAB_EVENT >/dev/null; sleep 1)","output_fields":{"evt.time":1792241665215430014,"proc.cmdline":"sh -c echo DEVSECOPS_LAB_EVENT >/dev/null; sleep 1","proc.pid":75801},"priority":"Notice","rule":"DevSecOps Lab Shell Marker","source":"syscall","tags":["devsecops_lab"],"time":"2026-10-17T12:54:25.215430014Z"}
+PASS: real Falco syscall event observed
+2026/10/17 12:54:12 [INFO]  : Falcosidekick is up and listening on :2801
+2026/10/17 12:54:25 [DEBUG] : Falco's payload : {"uuid":"5bd923f1-c91f-4519-a59b-25dddbd4f5e5","output":"12:54:25.215430014: Notice Lab shell execution detected (pid=75801 command=sh -c echo DEVSECOPS_LAB_EVENT \u003e/dev/null; sleep 1)","priority":"Notice","rule":"DevSecOps Lab Shell Marker","time":"2026-10-17T12:54:25.215430014Z","output_fields":{"evt.time":1792241665215430014,"proc.cmdline":"sh -c echo DEVSECOPS_LAB_EVENT \u003e/dev/null; sleep 1","proc.pid":75801},"source":"syscall","tags":["","devsecops_lab"],"hostname":"k3d-devsecops-lab-server-0"}

@@ -1,0 +1,18 @@
+Release "devsecops-falco" has been upgraded. Happy Helming!
+NAME: devsecops-falco
+LAST DEPLOYED: Sat Oct 17 17:59:47 2026
+NAMESPACE: falco
+STATUS: deployed
+REVISION: 3
+DESCRIPTION: Upgrade complete
+NOTES:
+Falco agents are spinning up on each node in your cluster. After a few
+seconds, they are going to start monitoring your containers looking for
+security issues.
+NAME                                             READY   STATUS    RESTARTS   AGE     IP           NODE                         NOMINATED NODE   READINESS GATES
+devsecops-falco-falcosidekick-68d9989cf4-t9jbk   1/1     Running   0          5m53s   10.42.0.12   k3d-devsecops-lab-server-0   <none>           <none>
+devsecops-falco-wj4tp                            1/1     Running   0          5m53s   10.42.0.13   k3d-devsecops-lab-server-0   <none>           <none>
+Context=k3d-devsecops-lab UTC=2026-10-17T12:59:49Z marker=DEVSECOPS_LAB_EVENT_bdff16e4049a4d70a6b6ba4beb3eb8e7
+{"hostname": "k3d-devsecops-lab-server-0", "output": "12:59:50.149975996: Notice Lab shell execution detected (pid=78040 command=sh -c echo DEVSECOPS_LAB_EVENT_bdff16e4049a4d70a6b6ba4beb3eb8e7 >/dev/null; sleep 1)", "output_fields": {"evt.time": 1792241990149975996, "proc.cmdline": "sh -c echo DEVSECOPS_LAB_EVENT_bdff16e4049a4d70a6b6ba4beb3eb8e7 >/dev/null; sleep 1", "proc.pid": 78040}, "priority": "Notice", "rule": "DevSecOps Lab Shell Marker", "source": "syscall", "tags": ["devsecops_lab"], "time": "2026-10-17T12:59:50.149975996Z"}
+2026/10/17 12:59:50 [DEBUG] : Falco's payload : {"uuid":"7005931a-90dd-481d-858f-fc7faa332223","output":"12:59:50.149975996: Notice Lab shell execution detected (pid=78040 command=sh -c echo DEVSECOPS_LAB_EVENT_bdff16e4049a4d70a6b6ba4beb3eb8e7 \u003e/dev/null; sleep 1)","priority":"Notice","rule":"DevSecOps Lab Shell Marker","time":"2026-10-17T12:59:50.149975996Z","output_fields":{"evt.time":1792241990149975996,"proc.cmdline":"sh -c echo DEVSECOPS_LAB_EVENT_bdff16e4049a4d70a6b6ba4beb3eb8e7 \u003e/dev/null; sleep 1","proc.pid":78040},"source":"syscall","tags":["","devsecops_lab"],"hostname":"k3d-devsecops-lab-server-0"}
+PASS: NEW unique marker; matching evt.time, proc.pid, proc.cmdline in Falco and Falcosidekick

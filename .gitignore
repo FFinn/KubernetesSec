@@ -1,0 +1,11 @@
+.idea/
+.venv/
+.local/
+*kubeconfig*
+.DS_Store
+__pycache__/
+*.pyc
+.env
+.env.*
+*.key
+*.pem

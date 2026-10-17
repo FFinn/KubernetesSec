@@ -1,0 +1,16 @@
+=== frontend: pod / SA / container / privileged ===
+frontend-8686b9777-wz2qh	frontend-sa	frontend privileged=false
+=== frontend: ConfigMap names and keys (values suppressed) ===
+=== frontend: deployment env sources (values suppressed) ===
+frontend
+DB_PASSWORD plaintext= secret=db-secret configmap=
+DB_USERNAME plaintext= secret=db-secret configmap=
+=== backend: pod / SA / container / privileged ===
+backend-74f4946f97-nqgq5	default	backend privileged=false
+=== backend: ConfigMap names and keys (values suppressed) ===
+=== backend: deployment env sources (values suppressed) ===
+backend
+DB_PASSWORD plaintext= secret=db-secret configmap=
+DB_USERNAME plaintext= secret=db-secret configmap=
+=== Lab ClusterRole rules ===
+=== Lab binding subjects ===

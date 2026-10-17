@@ -1,0 +1,3 @@
+PASS: .local/, .idea/, .venv/ excluded from Git candidate files
+PASS: .local mode 0700; kubeconfig mode 0600
+PASS: no failed Kubescape resource controls for frontend/backend in saved after snapshot

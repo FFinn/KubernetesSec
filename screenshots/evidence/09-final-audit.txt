@@ -1,0 +1,31 @@
+replicaset.apps "frontend-6c8f994dd6" deleted from frontend namespace
+replicaset.apps "frontend-867bdc8454" deleted from frontend namespace
+replicaset.apps "frontend-869cfb55bd" deleted from frontend namespace
+replicaset.apps "backend-54c7bb6f6f" deleted from backend namespace
+replicaset.apps "backend-686f678c4" deleted from backend namespace
+=== frontend: pod / SA / container / privileged ===
+frontend-8686b9777-wz2qh	frontend-sa	frontend privileged=false
+=== frontend: ConfigMap names and keys (values suppressed) ===
+kube-root-ca.crt	{"ca.crt":"-----BEGIN CERTIFICATE-----\nMIIBdzCCAR2gAwIBAgIBADAKBggqhkjOPQQDAjAjMSEwHwYDVQQDDBhrM3Mtc2Vy\ndmVyLWNhQDE3OTIyNDA4MzUwHhcNMjYxMDE3MTI0MDM1WhcNMzYxMDE0MTI0MDM1\nWjAjMSEwHwYDVQQDDBhrM3Mtc2VydmVyLWNhQDE3OTIyNDA4MzUwWTATBgcqhkjO\nPQIBBggqhkjOPQMBBwNCAATlCOpzIomv9Vyx4w9BdBQGzewUT07Cf+qk3W2GlZdh\nZV95erV8xrj1yMuEWwaaMFxIwrIHNdVEzS2PisK4QKIEo0IwQDAOBgNVHQ8BAf8E\nBAMCAqQwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUz/PW4w3aq9WOjG+fB7yq\n8HoF7O0wCgYIKoZIzj0EAwIDSAAwRQIgOOdClhow5Ra2bbA6Q3PJtmmS7Oq4lrwp\nnx9h723E7mQCIQCrzgYn8y/vQ7hkmUhgHc3FIhxpj2TXGNaKoCus3zsh4g==\n-----END CERTIFICATE-----\n"}
+=== frontend: deployment env sources (values suppressed) ===
+frontend
+DB_PASSWORD plaintext= secret=db-secret configmap=
+DB_USERNAME plaintext= secret=db-secret configmap=
+=== backend: pod / SA / container / privileged ===
+backend-74f4946f97-nqgq5	default	backend privileged=false
+=== backend: ConfigMap names and keys (values suppressed) ===
+kube-root-ca.crt	{"ca.crt":"-----BEGIN CERTIFICATE-----\nMIIBdzCCAR2gAwIBAgIBADAKBggqhkjOPQQDAjAjMSEwHwYDVQQDDBhrM3Mtc2Vy\ndmVyLWNhQDE3OTIyNDA4MzUwHhcNMjYxMDE3MTI0MDM1WhcNMzYxMDE0MTI0MDM1\nWjAjMSEwHwYDVQQDDBhrM3Mtc2VydmVyLWNhQDE3OTIyNDA4MzUwWTATBgcqhkjO\nPQIBBggqhkjOPQMBBwNCAATlCOpzIomv9Vyx4w9BdBQGzewUT07Cf+qk3W2GlZdh\nZV95erV8xrj1yMuEWwaaMFxIwrIHNdVEzS2PisK4QKIEo0IwQDAOBgNVHQ8BAf8E\nBAMCAqQwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUz/PW4w3aq9WOjG+fB7yq\n8HoF7O0wCgYIKoZIzj0EAwIDSAAwRQIgOOdClhow5Ra2bbA6Q3PJtmmS7Oq4lrwp\nnx9h723E7mQCIQCrzgYn8y/vQ7hkmUhgHc3FIhxpj2TXGNaKoCus3zsh4g==\n-----END CERTIFICATE-----\n"}
+=== backend: deployment env sources (values suppressed) ===
+backend
+DB_PASSWORD plaintext= secret=db-secret configmap=
+DB_USERNAME plaintext= secret=db-secret configmap=
+=== Lab ClusterRole rules ===
+=== Lab binding subjects ===
+Secret env present; values suppressed
+Secret env present; values suppressed
+NAMESPACE     NAME                                      READY   STATUS    RESTARTS   AGE   IP           NODE                         NOMINATED NODE   READINESS GATES
+backend       backend-74f4946f97-nqgq5                  1/1     Running   0          44s   10.42.0.9    k3d-devsecops-lab-server-0   <none>           <none>
+frontend      frontend-8686b9777-wz2qh                  1/1     Running   0          44s   10.42.0.10   k3d-devsecops-lab-server-0   <none>           <none>
+kube-system   coredns-695cbbfcb9-8d9vn                  1/1     Running   0          12m   10.42.0.3    k3d-devsecops-lab-server-0   <none>           <none>
+kube-system   local-path-provisioner-546dfc6456-d6h8f   1/1     Running   0          12m   10.42.0.2    k3d-devsecops-lab-server-0   <none>           <none>
+outsider      outsider-probe                            1/1     Running   0          29s   10.42.0.11   k3d-devsecops-lab-server-0   <none>           <none>

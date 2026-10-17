@@ -1,0 +1,21 @@
+serviceaccount/frontend-sa created
+role.rbac.authorization.k8s.io/frontend-reader created
+rolebinding.rbac.authorization.k8s.io/frontend-reader created
+deployment.apps/frontend patched
+Waiting for deployment "frontend" rollout to finish: 0 out of 1 new replicas have been updated...
+Waiting for deployment "frontend" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "frontend" rollout to finish: 1 old replicas are pending termination...
+deployment "frontend" successfully rolled out
+clusterrolebinding.rbac.authorization.k8s.io "lab-unsafe-default" deleted
+clusterrole.rbac.authorization.k8s.io "lab-unsafe-wildcard" deleted
+frontend-sa: get pods namespace=frontend => yes (expected yes)
+frontend-sa: list pods namespace=frontend => yes (expected yes)
+frontend-sa: get services namespace=frontend => yes (expected yes)
+frontend-sa: list services namespace=frontend => yes (expected yes)
+frontend-sa: create pods namespace=frontend => no (expected no)
+frontend-sa: delete pods namespace=frontend => no (expected no)
+frontend-sa: get secrets namespace=frontend => no (expected no)
+frontend-sa: get pods namespace=backend => no (expected no)
+default SA: get secrets -n backend => no (expected no)
+default SA: * * => no (expected no)
+frontend-sa
