@@ -1,0 +1,25 @@
+UTC=2026-11-03T03:08:47Z Context=kubernetes-admin@kubernetes
+namespace/attacker-test created
+pod/outsider-probe created
+pod/outsider-probe condition met
+Backend local PostgreSQL listener control:
+127.0.0.1:5432 - accepting connections
+/usr/bin/bash
+/usr/bin/curl
+networkpolicy.networking.k8s.io/default-deny unchanged
+networkpolicy.networking.k8s.io/default-deny unchanged
+networkpolicy.networking.k8s.io/frontend-egress unchanged
+networkpolicy.networking.k8s.io/backend-ingress unchanged
+10.200.141.42:5432 - no response
+COMPLETED_PG_PROBE rc=2
+PASS outsider app=frontend in attacker-test -> backend:5432 DENIED
+10.107.136.93   backend.backend.svc.cluster.local
+PASS frontend -> backend:5432 TCP connected
+PASS frontend HTTP listener serves requests as non-root
+NAMESPACE          NAME              POD-SELECTOR     AGE
+backend            backend-ingress   app=backend      5m15s
+backend            default-deny      <none>           5m16s
+calico-apiserver   allow-apiserver   apiserver=true   91m
+frontend           default-deny      <none>           5m16s
+frontend           frontend-egress   app=frontend     5m15s
+namespace "attacker-test" deleted

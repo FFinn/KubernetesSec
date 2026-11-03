@@ -1,0 +1,3 @@
+UTC=2026-11-03T03:05:58Z marker=DSO06_SPRINT_e07f4b5802fe4fd6987baa2f605867dd
+uid=101(nginx) gid=101(nginx) groups=101(nginx)
+Harmless terminal shell completed; inspect Falco and Falcosidekick UI for this marker.

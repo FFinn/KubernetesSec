@@ -1,6 +1,9 @@
 .idea/
 .venv/
 .local/
+/private/
+/policies/
+/bin/
 *kubeconfig*
 .DS_Store
 __pycache__/

@@ -1,0 +1,221 @@
+UTC: 2026-11-03T02:52:01Z
+
+OS and resources
+Linux 5.15.0-161-generic x86_64 GNU/Linux
+PRETTY_NAME="Ubuntu 22.04.5 LTS"
+NAME="Ubuntu"
+VERSION_ID="22.04"
+VERSION="22.04.5 LTS (Jammy Jellyfish)"
+VERSION_CODENAME=jammy
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+UBUNTU_CODENAME=jammy
+               total        used        free      shared  buff/cache   available
+Mem:            15Gi       2.3Gi       4.0Gi        37Mi       9.3Gi        12Gi
+Swap:             0B          0B          0B
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1        68G   11G   57G  16% /
+
+Available tools
+/usr/bin/kubectl
+/usr/local/bin/helm
+
+Cluster version and context
+kubernetes-admin@kubernetes
+Client Version: v1.31.2
+Kustomize Version: v5.4.2
+Server Version: v1.31.2
+
+Nodes
+NAME                                 STATUS   ROLES           AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION       CONTAINER-RUNTIME
+dso06-master-20261103-51aee1912a7d   Ready    control-plane   75m   v1.31.2   10.87.0.241   <none>        Ubuntu 22.04.5 LTS   5.15.0-161-generic   containerd://1.7.23
+
+Namespaces
+NAME                 STATUS   AGE   LABELS
+backend              Active   71m   kubernetes.io/metadata.name=backend
+calico-apiserver     Active   74m   kubernetes.io/metadata.name=calico-apiserver,name=calico-apiserver,pod-security.kubernetes.io/enforce-version=latest,pod-security.kubernetes.io/enforce=privileged
+calico-system        Active   75m   kubernetes.io/metadata.name=calico-system,name=calico-system,pod-security.kubernetes.io/enforce-version=latest,pod-security.kubernetes.io/enforce=privileged
+cert-manager         Active   73m   kubernetes.io/metadata.name=cert-manager
+default              Active   75m   kubernetes.io/metadata.name=default
+falco                Active   73m   kubernetes.io/metadata.name=falco,name=falco
+frontend             Active   71m   kubernetes.io/metadata.name=frontend
+ingress-nginx        Active   71m   kubernetes.io/metadata.name=ingress-nginx,name=ingress-nginx
+kube-node-lease      Active   75m   kubernetes.io/metadata.name=kube-node-lease
+kube-public          Active   75m   kubernetes.io/metadata.name=kube-public
+kube-system          Active   75m   kubernetes.io/metadata.name=kube-system
+kyverno              Active   72m   kubernetes.io/metadata.name=kyverno,name=kyverno
+local-path-storage   Active   74m   kubernetes.io/metadata.name=local-path-storage
+metallb-system       Active   69m   kubernetes.io/metadata.name=metallb-system,pod-security.kubernetes.io/audit=privileged,pod-security.kubernetes.io/enforce=privileged,pod-security.kubernetes.io/warn=privileged
+tigera-operator      Active   75m   kubernetes.io/metadata.name=tigera-operator,name=tigera-operator
+trivy-system         Active   71m   kubernetes.io/metadata.name=trivy-system,name=trivy-system
+
+Pods
+NAMESPACE            NAME                                                         READY   STATUS    RESTARTS   AGE   IP              NODE                                 NOMINATED NODE   READINESS GATES
+backend              backend-86c7889647-qvjsg                                     1/1     Running   0          71m   10.200.141.38   dso06-master-20261103-51aee1912a7d   <none>           <none>
+calico-apiserver     calico-apiserver-59c5fbdfb6-ffv2p                            1/1     Running   0          74m   10.200.141.6    dso06-master-20261103-51aee1912a7d   <none>           <none>
+calico-apiserver     calico-apiserver-59c5fbdfb6-x8562                            1/1     Running   0          74m   10.200.141.5    dso06-master-20261103-51aee1912a7d   <none>           <none>
+calico-system        calico-kube-controllers-54f96585c7-ml6wc                     1/1     Running   0          75m   10.200.141.2    dso06-master-20261103-51aee1912a7d   <none>           <none>
+calico-system        calico-node-psz4x                                            1/1     Running   0          74m   10.87.0.241     dso06-master-20261103-51aee1912a7d   <none>           <none>
+calico-system        calico-typha-759df5f777-wfxk9                                1/1     Running   0          75m   10.87.0.241     dso06-master-20261103-51aee1912a7d   <none>           <none>
+calico-system        csi-node-driver-sknfd                                        2/2     Running   0          75m   10.200.141.4    dso06-master-20261103-51aee1912a7d   <none>           <none>
+cert-manager         cert-manager-5c887c889d-48cns                                1/1     Running   0          73m   10.200.141.12   dso06-master-20261103-51aee1912a7d   <none>           <none>
+cert-manager         cert-manager-cainjector-58f6855565-7tmsh                     1/1     Running   0          73m   10.200.141.10   dso06-master-20261103-51aee1912a7d   <none>           <none>
+cert-manager         cert-manager-webhook-6647d6545d-tthp6                        1/1     Running   0          73m   10.200.141.11   dso06-master-20261103-51aee1912a7d   <none>           <none>
+falco                falco-falcosidekick-9c8bd6884-k7j4w                          1/1     Running   0          73m   10.200.141.13   dso06-master-20261103-51aee1912a7d   <none>           <none>
+falco                falco-falcosidekick-9c8bd6884-wlgq2                          1/1     Running   0          73m   10.200.141.15   dso06-master-20261103-51aee1912a7d   <none>           <none>
+falco                falco-falcosidekick-ui-6dd9b55ccf-4v2cw                      1/1     Running   0          73m   10.200.141.14   dso06-master-20261103-51aee1912a7d   <none>           <none>
+falco                falco-falcosidekick-ui-6dd9b55ccf-zgbcj                      1/1     Running   0          73m   10.200.141.17   dso06-master-20261103-51aee1912a7d   <none>           <none>
+falco                falco-falcosidekick-ui-redis-0                               1/1     Running   0          73m   10.200.141.19   dso06-master-20261103-51aee1912a7d   <none>           <none>
+falco                falco-p484n                                                  2/2     Running   0          73m   10.200.141.16   dso06-master-20261103-51aee1912a7d   <none>           <none>
+frontend             frontend-bd596fc68-mx8vj                                     1/1     Running   0          71m   10.200.141.37   dso06-master-20261103-51aee1912a7d   <none>           <none>
+ingress-nginx        ingress-nginx-controller-bd6958564-66w9f                     1/1     Running   0          69m   10.200.141.43   dso06-master-20261103-51aee1912a7d   <none>           <none>
+kube-system          coredns-7c65d6cfc9-4nb9v                                     1/1     Running   0          75m   10.200.141.3    dso06-master-20261103-51aee1912a7d   <none>           <none>
+kube-system          coredns-7c65d6cfc9-c6xpm                                     1/1     Running   0          75m   10.200.141.1    dso06-master-20261103-51aee1912a7d   <none>           <none>
+kube-system          etcd-dso06-master-20261103-51aee1912a7d                      1/1     Running   0          75m   10.87.0.241     dso06-master-20261103-51aee1912a7d   <none>           <none>
+kube-system          kube-apiserver-dso06-master-20261103-51aee1912a7d            1/1     Running   0          75m   10.87.0.241     dso06-master-20261103-51aee1912a7d   <none>           <none>
+kube-system          kube-controller-manager-dso06-master-20261103-51aee1912a7d   1/1     Running   0          75m   10.87.0.241     dso06-master-20261103-51aee1912a7d   <none>           <none>
+kube-system          kube-proxy-t4smn                                             1/1     Running   0          75m   10.87.0.241     dso06-master-20261103-51aee1912a7d   <none>           <none>
+kube-system          kube-scheduler-dso06-master-20261103-51aee1912a7d            1/1     Running   0          75m   10.87.0.241     dso06-master-20261103-51aee1912a7d   <none>           <none>
+kube-system          metrics-server-c9658664b-zts9t                               1/1     Running   0          73m   10.200.141.9    dso06-master-20261103-51aee1912a7d   <none>           <none>
+kyverno              kyverno-admission-controller-975974446-7trqc                 1/1     Running   0          72m   10.200.141.23   dso06-master-20261103-51aee1912a7d   <none>           <none>
+kyverno              kyverno-background-controller-659c689679-x9q25               1/1     Running   0          72m   10.200.141.20   dso06-master-20261103-51aee1912a7d   <none>           <none>
+kyverno              kyverno-cleanup-controller-684499fcb4-89lw6                  1/1     Running   0          72m   10.200.141.21   dso06-master-20261103-51aee1912a7d   <none>           <none>
+kyverno              kyverno-reports-controller-799ff57dfc-88ngl                  1/1     Running   0          72m   10.200.141.22   dso06-master-20261103-51aee1912a7d   <none>           <none>
+local-path-storage   local-path-provisioner-868d848697-47m6x                      1/1     Running   0          74m   10.200.141.7    dso06-master-20261103-51aee1912a7d   <none>           <none>
+metallb-system       controller-8694df9d9b-5p7b2                                  1/1     Running   0          69m   10.200.141.47   dso06-master-20261103-51aee1912a7d   <none>           <none>
+metallb-system       speaker-tfvm2                                                1/1     Running   0          69m   10.87.0.241     dso06-master-20261103-51aee1912a7d   <none>           <none>
+tigera-operator      tigera-operator-9544b9c86-7kbkd                              1/1     Running   0          75m   10.87.0.241     dso06-master-20261103-51aee1912a7d   <none>           <none>
+trivy-system         trivy-operator-6d9f544878-4l5rh                              1/1     Running   0          71m   10.200.141.24   dso06-master-20261103-51aee1912a7d   <none>           <none>
+
+NetworkPolicy and CNI
+NAMESPACE          NAME              POD-SELECTOR     AGE
+calico-apiserver   allow-apiserver   apiserver=true   74m
+NAME                                                         READY   STATUS    RESTARTS   AGE   LABELS
+coredns-7c65d6cfc9-4nb9v                                     1/1     Running   0          75m   k8s-app=kube-dns,pod-template-hash=7c65d6cfc9
+coredns-7c65d6cfc9-c6xpm                                     1/1     Running   0          75m   k8s-app=kube-dns,pod-template-hash=7c65d6cfc9
+etcd-dso06-master-20261103-51aee1912a7d                      1/1     Running   0          75m   component=etcd,tier=control-plane
+kube-apiserver-dso06-master-20261103-51aee1912a7d            1/1     Running   0          75m   component=kube-apiserver,tier=control-plane
+kube-controller-manager-dso06-master-20261103-51aee1912a7d   1/1     Running   0          75m   component=kube-controller-manager,tier=control-plane
+kube-proxy-t4smn                                             1/1     Running   0          75m   controller-revision-hash=77987969cc,k8s-app=kube-proxy,pod-template-generation=1
+kube-scheduler-dso06-master-20261103-51aee1912a7d            1/1     Running   0          75m   component=kube-scheduler,tier=control-plane
+metrics-server-c9658664b-zts9t                               1/1     Running   0          73m   k8s-app=metrics-server,pod-template-hash=c9658664b
+
+Resources in frontend
+NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/frontend   1/1     1            1           71m
+
+NAME               TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
+service/frontend   ClusterIP   10.101.45.149   <none>        80/TCP    71m
+
+NAME                     SECRETS   AGE
+serviceaccount/default   0         71m
+
+Images and SA in frontend
+frontend SA= images=nginx:1.25
+
+Resources in backend
+NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/backend   1/1     1            1           71m
+
+NAME              TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/backend   ClusterIP   10.107.136.93   <none>        5432/TCP   71m
+
+NAME                     SECRETS   AGE
+serviceaccount/default   0         71m
+
+Images and SA in backend
+backend SA= images=postgres:15
+
+ClusterRoleBindings
+NAME                                                            ROLE                                                                               AGE
+calico-apiserver-access-calico-crds                             ClusterRole/calico-crds                                                            74m
+calico-apiserver-delegate-auth                                  ClusterRole/system:auth-delegator                                                  74m
+calico-apiserver-webhook-reader                                 ClusterRole/calico-webhook-reader                                                  74m
+calico-cni-plugin                                               ClusterRole/calico-cni-plugin                                                      75m
+calico-extension-apiserver-auth-access                          ClusterRole/calico-extension-apiserver-auth-access                                 74m
+calico-kube-controllers                                         ClusterRole/calico-kube-controllers                                                75m
+calico-node                                                     ClusterRole/calico-node                                                            75m
+calico-typha                                                    ClusterRole/calico-typha                                                           75m
+cert-manager-cainjector                                         ClusterRole/cert-manager-cainjector                                                73m
+cert-manager-controller-approve:cert-manager-io                 ClusterRole/cert-manager-controller-approve:cert-manager-io                        73m
+cert-manager-controller-certificates                            ClusterRole/cert-manager-controller-certificates                                   73m
+cert-manager-controller-certificatesigningrequests              ClusterRole/cert-manager-controller-certificatesigningrequests                     73m
+cert-manager-controller-challenges                              ClusterRole/cert-manager-controller-challenges                                     73m
+cert-manager-controller-clusterissuers                          ClusterRole/cert-manager-controller-clusterissuers                                 73m
+cert-manager-controller-ingress-shim                            ClusterRole/cert-manager-controller-ingress-shim                                   73m
+cert-manager-controller-issuers                                 ClusterRole/cert-manager-controller-issuers                                        73m
+cert-manager-controller-orders                                  ClusterRole/cert-manager-controller-orders                                         73m
+cert-manager-webhook:subjectaccessreviews                       ClusterRole/cert-manager-webhook:subjectaccessreviews                              73m
+cluster-admin                                                   ClusterRole/cluster-admin                                                          75m
+ingress-nginx                                                   ClusterRole/ingress-nginx                                                          69m
+kubeadm:cluster-admins                                          ClusterRole/cluster-admin                                                          75m
+kubeadm:get-nodes                                               ClusterRole/kubeadm:get-nodes                                                      75m
+kubeadm:kubelet-bootstrap                                       ClusterRole/system:node-bootstrapper                                               75m
+kubeadm:node-autoapprove-bootstrap                              ClusterRole/system:certificates.k8s.io:certificatesigningrequests:nodeclient       75m
+kubeadm:node-autoapprove-certificate-rotation                   ClusterRole/system:certificates.k8s.io:certificatesigningrequests:selfnodeclient   75m
+kubeadm:node-proxier                                            ClusterRole/system:node-proxier                                                    75m
+kyverno:admission-controller                                    ClusterRole/kyverno:admission-controller                                           72m
+kyverno:admission-controller:view                               ClusterRole/view                                                                   72m
+kyverno:background-controller                                   ClusterRole/kyverno:background-controller                                          72m
+kyverno:background-controller:view                              ClusterRole/view                                                                   72m
+kyverno:cleanup-controller                                      ClusterRole/kyverno:cleanup-controller                                             72m
+kyverno:reports-controller                                      ClusterRole/kyverno:reports-controller                                             72m
+kyverno:reports-controller:view                                 ClusterRole/view                                                                   72m
+local-path-provisioner-bind                                     ClusterRole/local-path-provisioner-role                                            74m
+metallb-system:controller                                       ClusterRole/metallb-system:controller                                              69m
+metallb-system:speaker                                          ClusterRole/metallb-system:speaker                                                 69m
+metrics-server:system:auth-delegator                            ClusterRole/system:auth-delegator                                                  74m
+system:basic-user                                               ClusterRole/system:basic-user                                                      75m
+system:controller:attachdetach-controller                       ClusterRole/system:controller:attachdetach-controller                              75m
+system:controller:certificate-controller                        ClusterRole/system:controller:certificate-controller                               75m
+system:controller:clusterrole-aggregation-controller            ClusterRole/system:controller:clusterrole-aggregation-controller                   75m
+system:controller:cronjob-controller                            ClusterRole/system:controller:cronjob-controller                                   75m
+system:controller:daemon-set-controller                         ClusterRole/system:controller:daemon-set-controller                                75m
+system:controller:deployment-controller                         ClusterRole/system:controller:deployment-controller                                75m
+system:controller:disruption-controller                         ClusterRole/system:controller:disruption-controller                                75m
+system:controller:endpoint-controller                           ClusterRole/system:controller:endpoint-controller                                  75m
+system:controller:endpointslice-controller                      ClusterRole/system:controller:endpointslice-controller                             75m
+system:controller:endpointslicemirroring-controller             ClusterRole/system:controller:endpointslicemirroring-controller                    75m
+system:controller:ephemeral-volume-controller                   ClusterRole/system:controller:ephemeral-volume-controller                          75m
+system:controller:expand-controller                             ClusterRole/system:controller:expand-controller                                    75m
+system:controller:generic-garbage-collector                     ClusterRole/system:controller:generic-garbage-collector                            75m
+system:controller:horizontal-pod-autoscaler                     ClusterRole/system:controller:horizontal-pod-autoscaler                            75m
+system:controller:job-controller                                ClusterRole/system:controller:job-controller                                       75m
+system:controller:legacy-service-account-token-cleaner          ClusterRole/system:controller:legacy-service-account-token-cleaner                 75m
+system:controller:namespace-controller                          ClusterRole/system:controller:namespace-controller                                 75m
+system:controller:node-controller                               ClusterRole/system:controller:node-controller                                      75m
+system:controller:persistent-volume-binder                      ClusterRole/system:controller:persistent-volume-binder                             75m
+system:controller:pod-garbage-collector                         ClusterRole/system:controller:pod-garbage-collector                                75m
+system:controller:pv-protection-controller                      ClusterRole/system:controller:pv-protection-controller                             75m
+system:controller:pvc-protection-controller                     ClusterRole/system:controller:pvc-protection-controller                            75m
+system:controller:replicaset-controller                         ClusterRole/system:controller:replicaset-controller                                75m
+system:controller:replication-controller                        ClusterRole/system:controller:replication-controller                               75m
+system:controller:resourcequota-controller                      ClusterRole/system:controller:resourcequota-controller                             75m
+system:controller:root-ca-cert-publisher                        ClusterRole/system:controller:root-ca-cert-publisher                               75m
+system:controller:route-controller                              ClusterRole/system:controller:route-controller                                     75m
+system:controller:service-account-controller                    ClusterRole/system:controller:service-account-controller                           75m
+system:controller:service-controller                            ClusterRole/system:controller:service-controller                                   75m
+system:controller:statefulset-controller                        ClusterRole/system:controller:statefulset-controller                               75m
+system:controller:ttl-after-finished-controller                 ClusterRole/system:controller:ttl-after-finished-controller                        75m
+system:controller:ttl-controller                                ClusterRole/system:controller:ttl-controller                                       75m
+system:controller:validatingadmissionpolicy-status-controller   ClusterRole/system:controller:validatingadmissionpolicy-status-controller          75m
+system:coredns                                                  ClusterRole/system:coredns                                                         75m
+system:discovery                                                ClusterRole/system:discovery                                                       75m
+system:kube-controller-manager                                  ClusterRole/system:kube-controller-manager                                         75m
+system:kube-dns                                                 ClusterRole/system:kube-dns                                                        75m
+system:kube-scheduler                                           ClusterRole/system:kube-scheduler                                                  75m
+system:metrics-server                                           ClusterRole/system:metrics-server                                                  74m
+system:monitoring                                               ClusterRole/system:monitoring                                                      75m
+system:node                                                     ClusterRole/system:node                                                            75m
+system:node-proxier                                             ClusterRole/system:node-proxier                                                    75m
+system:public-info-viewer                                       ClusterRole/system:public-info-viewer                                              75m
+system:service-account-issuer-discovery                         ClusterRole/system:service-account-issuer-discovery                                75m
+system:volume-scheduler                                         ClusterRole/system:volume-scheduler                                                75m
+tigera-operator                                                 ClusterRole/tigera-operator                                                        75m
+trivy-operator                                                  ClusterRole/trivy-operator                                                         71m
+unsafe-binding-backend                                          ClusterRole/unsafe-role                                                            71m
+unsafe-binding-frontend                                         ClusterRole/unsafe-role                                                            71m

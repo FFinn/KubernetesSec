@@ -1,0 +1,27 @@
+UTC=2026-11-03T02:55:07Z
+Context=kubernetes-admin@kubernetes
+== frontend: Pod / ServiceAccount / privileged ==
+frontend-bd596fc68-mx8vj SA=default container=frontend privileged=
+== frontend: env.value names (values suppressed) ==
+frontend
+DB_HOST source=env.value
+DB_PASSWORD source=env.value
+== frontend: ConfigMaps containing password key ==
+== frontend: ConfigMap/Secret env references ==
+frontend
+DB_HOST configMap= secret= key=
+DB_PASSWORD configMap= secret= key=
+== backend: Pod / ServiceAccount / privileged ==
+backend-86c7889647-qvjsg SA=default container=backend privileged=true
+== backend: env.value names (values suppressed) ==
+backend
+== backend: ConfigMaps containing password key ==
+db-config password key present (value suppressed)
+== backend: ConfigMap/Secret env references ==
+backend
+POSTGRES_PASSWORD configMap=db-config secret= key=
+== Unsafe wildcard role and subjects ==
+unsafe-role
+["*"] ["*"] ["*"]
+unsafe-binding-backend [{"kind":"ServiceAccount","name":"default","namespace":"backend"}]
+unsafe-binding-frontend [{"kind":"ServiceAccount","name":"default","namespace":"frontend"}]

@@ -1,0 +1,91 @@
+{"level":"info","ts":"2026-11-03T02:55:47Z","msg":"Kubescape scanner initializing..."}
+{"level":"info","ts":"2026-11-03T02:55:47Z","msg":"Initialized scanner"}
+{"level":"info","ts":"2026-11-03T02:55:47Z","msg":"Loading policies..."}
+{"level":"info","ts":"2026-11-03T02:55:47Z","msg":"Loaded policies"}
+{"level":"info","ts":"2026-11-03T02:55:47Z","msg":"Loading exceptions..."}
+{"level":"warn","ts":"2026-11-03T02:55:47Z","msg":"failed to get CRD security exceptions; continuing with primary exceptions only","error":"failed to list securityexceptions CRDs: the server could not find the requested resource"}
+{"level":"info","ts":"2026-11-03T02:55:47Z","msg":"Loaded exceptions"}
+{"level":"info","ts":"2026-11-03T02:55:47Z","msg":"Loading account configurations..."}
+{"level":"info","ts":"2026-11-03T02:55:47Z","msg":"Loaded account configurations"}
+{"level":"info","ts":"2026-11-03T02:55:47Z","msg":"Accessing Kubernetes objects..."}
+{"level":"warn","ts":"2026-11-03T02:55:47Z","msg":"resource was not found in Kubernetes discovery; skipping live query","apiGroup":"policy","apiVersion":"*","resource":"PodSecurityPolicy"}
+{"level":"warn","ts":"2026-11-03T02:55:47Z","msg":"resource was not found in Kubernetes discovery; skipping live query","apiGroup":"cilium.io","apiVersion":"v2","resource":"CiliumNetworkPolicy"}
+{"level":"warn","ts":"2026-11-03T02:55:47Z","msg":"resource was not found in Kubernetes discovery; skipping live query","apiGroup":"cilium.io","apiVersion":"v2","resource":"CiliumClusterwideNetworkPolicy"}
+{"level":"info","ts":"2026-11-03T02:55:47Z","msg":"Accessed Kubernetes objects"}
+{"level":"info","ts":"2026-11-03T02:55:47Z","msg":"Scanning","Cluster":"kubernetes-admin-kubernetes"}
+{"level":"info","ts":"2026-11-03T02:55:47Z","msg":"Done scanning","Cluster":"kubernetes-admin-kubernetes"}
+{"level":"info","ts":"2026-11-03T02:55:48Z","msg":"Done aggregating results"}
+
+──────────────────────────────────────────────────
+
+Framework scanned: NSA
+
+╭─────────────────┬────╮
+│        Controls │ 26 │
+│          Passed │ 5  │
+│          Failed │ 19 │
+│ Action Required │ 2  │
+╰─────────────────┴────╯
+
+Failed resources by severity:
+
+╭──────────┬─────╮
+│ Critical │ 0   │
+│     High │ 77  │
+│   Medium │ 140 │
+│      Low │ 20  │
+╰──────────┴─────╯
+
+Run with '--verbose'/'-v' to see control failures for each resource.
+
+╭──────────┬────────────────────────────────────────────────────┬──────────────────┬───────────────┬───────────────────╮
+│ Severity │ Control name                                       │ Failed resources │ All Resources │ Compliance score  │
+├──────────┼────────────────────────────────────────────────────┼──────────────────┼───────────────┼───────────────────┤
+│ Critical │ Disable anonymous access to Kubelet service        │         0        │       0       │ Action Required * │
+│ Critical │ Enforce Kubelet client TLS authentication          │         0        │       0       │ Action Required * │
+│   High   │ Applications credentials in configuration files    │         5        │       69      │        93%        │
+│   High   │ HostNetwork access                                 │         9        │       31      │        71%        │
+│   High   │ Insecure capabilities                              │         1        │       31      │        97%        │
+│   High   │ Privileged container                               │         5        │       31      │        84%        │
+│   High   │ Ensure CPU limits are set                          │        31        │       31      │         0%        │
+│   High   │ Ensure memory limits are set                       │        26        │       31      │        16%        │
+│  Medium  │ Prevent containers from allowing command execution │         4        │      123      │        97%        │
+│  Medium  │ Non-root containers                                │        25        │       31      │        19%        │
+│  Medium  │ Allow privilege escalation                         │        15        │       31      │        52%        │
+│  Medium  │ Ingress and Egress blocked                         │        30        │       32      │         6%        │
+│  Medium  │ Automatic mapping of service account               │        31        │      105      │        70%        │
+│  Medium  │ Administrative Roles                               │         4        │      123      │        97%        │
+│  Medium  │ Cluster internal networking                        │        15        │       16      │         6%        │
+│  Medium  │ Linux hardening                                    │        13        │       31      │        58%        │
+│  Medium  │ Secret/etcd encryption enabled                     │         1        │       1       │         0%        │
+│  Medium  │ Audit logs enabled                                 │         1        │       1       │         0%        │
+│  Medium  │ Nginx Ingress Controller End of Life               │         1        │       27      │        96%        │
+│    Low   │ Immutable container filesystem                     │        19        │       31      │        39%        │
+│    Low   │ PSP enabled                                        │         1        │       1       │         0%        │
+├──────────┼────────────────────────────────────────────────────┼──────────────────┼───────────────┼───────────────────┤
+│          │                  Resource Summary                  │        53        │      283      │       53.88%      │
+╰──────────┴────────────────────────────────────────────────────┴──────────────────┴───────────────┴───────────────────╯
+
+🚨 * missing: hostdata.kubescape.cloud/v1beta0/KubeletInfo
+
+────────────────────────────────────────────────────────────────────────────────
+Scan Coverage Warning
+────────────────────────────────────────────────────────────────────────────────
+
+Scan coverage score: 83% (24/26 controls evaluated)
+
+The following resource types could not be collected:
+  • container.googleapis.com/v1/ClusterDescribe: failed to get cloud provider, cluster: kubernetes-admin-kubernetes
+  • eks.amazonaws.com/v1/ClusterDescribe: failed to get cloud provider, cluster: kubernetes-admin-kubernetes
+  • hostdata.kubescape.cloud/v1beta0/KubeletInfo: This control is scanned exclusively by the Kubescape operator, not the Kubescape CLI. Install the Kubescape operator:
+     https://kubescape.io/docs/install-operator/.
+  • management.azure.com/v1/ClusterDescribe: failed to get cloud provider, cluster: kubernetes-admin-kubernetes
+
+The following controls were NOT evaluated:
+  • C-0069 (missing: hostdata.kubescape.cloud/v1beta0/KubeletInfo)
+  • C-0070 (missing: hostdata.kubescape.cloud/v1beta0/KubeletInfo)
+
+To fix this, ensure the scanning identity has list/get permissions on the missing resource types.
+{"level":"info","ts":"2026-11-03T02:55:48Z","msg":"Scan results saved","filename":"private/kubescape-before.json"}
+
+Overall compliance-score (100- Excellent, 0- All failed): 54

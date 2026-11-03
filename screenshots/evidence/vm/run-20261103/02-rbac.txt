@@ -1,0 +1,30 @@
+UTC=2026-11-03T03:01:16Z Context=kubernetes-admin@kubernetes
+BEFORE frontend/default wildcard=yes
+BEFORE backend/default wildcard=yes
+serviceaccount/frontend-sa unchanged
+serviceaccount/backend-sa created
+role.rbac.authorization.k8s.io/frontend-reader created
+rolebinding.rbac.authorization.k8s.io/frontend-reader created
+deployment.apps/frontend patched
+Waiting for deployment "frontend" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "frontend" rollout to finish: 1 old replicas are pending termination...
+deployment "frontend" successfully rolled out
+deployment.apps/backend patched
+Waiting for deployment "backend" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "backend" rollout to finish: 1 old replicas are pending termination...
+deployment "backend" successfully rolled out
+clusterrolebinding.rbac.authorization.k8s.io "unsafe-binding-frontend" deleted
+clusterrolebinding.rbac.authorization.k8s.io "unsafe-binding-backend" deleted
+clusterrole.rbac.authorization.k8s.io "unsafe-role" deleted
+frontend-sa get pods namespace=frontend => yes expected=yes
+frontend-sa list pods namespace=frontend => yes expected=yes
+frontend-sa get services namespace=frontend => yes expected=yes
+frontend-sa list services namespace=frontend => yes expected=yes
+frontend-sa create pods namespace=frontend => no expected=no
+frontend-sa delete pods namespace=frontend => no expected=no
+frontend-sa get secrets namespace=frontend => no expected=no
+frontend-sa get pods namespace=backend => no expected=no
+AFTER frontend/default * *=no expected=no
+AFTER frontend/default get secrets=no expected=no
+AFTER backend/default * *=no expected=no
+AFTER backend/default get secrets=no expected=no

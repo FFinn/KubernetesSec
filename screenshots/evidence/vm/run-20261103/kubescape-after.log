@@ -1,0 +1,120 @@
+deployment "frontend" successfully rolled out
+replicaset.apps "frontend-6f9cc7986d" deleted
+replicaset.apps "frontend-7d5c765f5b" deleted
+deployment "backend" successfully rolled out
+replicaset.apps "backend-6fcb587f67" deleted
+replicaset.apps "backend-7847d4845c" deleted
+Warning: resource namespaces/frontend is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by kubectl apply. kubectl apply should only be used on resources created declaratively by either kubectl create --save-config or kubectl apply. The missing annotation will be patched automatically.
+namespace/frontend configured (server dry run)
+namespace/backend configured (server dry run)
+serviceaccount/frontend-sa unchanged (server dry run)
+serviceaccount/backend-sa unchanged (server dry run)
+role.rbac.authorization.k8s.io/frontend-reader unchanged (server dry run)
+rolebinding.rbac.authorization.k8s.io/frontend-reader unchanged (server dry run)
+secret/db-secret unchanged (server dry run)
+secret/db-secret unchanged (server dry run)
+configmap/frontend-config unchanged (server dry run)
+deployment.apps/frontend configured (server dry run)
+deployment.apps/backend unchanged (server dry run)
+service/frontend unchanged (server dry run)
+service/backend unchanged (server dry run)
+namespace/backend unchanged (server dry run)
+networkpolicy.networking.k8s.io/default-deny unchanged (server dry run)
+networkpolicy.networking.k8s.io/default-deny unchanged (server dry run)
+networkpolicy.networking.k8s.io/frontend-egress unchanged (server dry run)
+networkpolicy.networking.k8s.io/backend-ingress unchanged (server dry run)
+UTC=2026-11-03T03:05:25Z Context=kubernetes-admin@kubernetes
+bdcdb4747d08c1625241f41fc7fc7fdc2ed68dd506c0665975337772c6196500  policies/nsa-policy.json
+6d3b9676f6591c750e35e35dfb3f46b97a20f25d153f6428b2c7b86046fd2b72  policies/controls-inputs.json
+ad87a61bc4018717559ec0755e24aef55fc50bf2974f329fc585a2e0a027e8ab  policies/exceptions.json
+{"level":"info","ts":"2026-11-03T03:05:25Z","msg":"Kubescape scanner initializing..."}
+{"level":"info","ts":"2026-11-03T03:05:25Z","msg":"Initialized scanner"}
+{"level":"info","ts":"2026-11-03T03:05:25Z","msg":"Loading policies..."}
+{"level":"info","ts":"2026-11-03T03:05:25Z","msg":"Loaded policies"}
+{"level":"info","ts":"2026-11-03T03:05:25Z","msg":"Loading exceptions..."}
+{"level":"warn","ts":"2026-11-03T03:05:25Z","msg":"failed to get CRD security exceptions; continuing with primary exceptions only","error":"failed to list securityexceptions CRDs: the server could not find the requested resource"}
+{"level":"info","ts":"2026-11-03T03:05:25Z","msg":"Loaded exceptions"}
+{"level":"info","ts":"2026-11-03T03:05:25Z","msg":"Loading account configurations..."}
+{"level":"info","ts":"2026-11-03T03:05:25Z","msg":"Loaded account configurations"}
+{"level":"info","ts":"2026-11-03T03:05:25Z","msg":"Accessing Kubernetes objects..."}
+{"level":"warn","ts":"2026-11-03T03:05:25Z","msg":"resource was not found in Kubernetes discovery; skipping live query","apiGroup":"policy","apiVersion":"*","resource":"PodSecurityPolicy"}
+{"level":"warn","ts":"2026-11-03T03:05:25Z","msg":"resource was not found in Kubernetes discovery; skipping live query","apiGroup":"cilium.io","apiVersion":"v2","resource":"CiliumNetworkPolicy"}
+{"level":"warn","ts":"2026-11-03T03:05:25Z","msg":"resource was not found in Kubernetes discovery; skipping live query","apiGroup":"cilium.io","apiVersion":"v2","resource":"CiliumClusterwideNetworkPolicy"}
+{"level":"info","ts":"2026-11-03T03:05:25Z","msg":"Accessed Kubernetes objects"}
+{"level":"info","ts":"2026-11-03T03:05:25Z","msg":"Scanning","Cluster":"kubernetes-admin-kubernetes"}
+{"level":"info","ts":"2026-11-03T03:05:25Z","msg":"Done scanning","Cluster":"kubernetes-admin-kubernetes"}
+{"level":"info","ts":"2026-11-03T03:05:25Z","msg":"Done aggregating results"}
+
+──────────────────────────────────────────────────
+
+Framework scanned: NSA
+
+╭─────────────────┬────╮
+│        Controls │ 26 │
+│          Passed │ 5  │
+│          Failed │ 19 │
+│ Action Required │ 2  │
+╰─────────────────┴────╯
+
+Failed resources by severity:
+
+╭──────────┬─────╮
+│ Critical │ 0   │
+│     High │ 70  │
+│   Medium │ 124 │
+│      Low │ 18  │
+╰──────────┴─────╯
+
+Run with '--verbose'/'-v' to see control failures for each resource.
+
+╭──────────┬────────────────────────────────────────────────────┬──────────────────┬───────────────┬───────────────────╮
+│ Severity │ Control name                                       │ Failed resources │ All Resources │ Compliance score  │
+├──────────┼────────────────────────────────────────────────────┼──────────────────┼───────────────┼───────────────────┤
+│ Critical │ Disable anonymous access to Kubelet service        │         0        │       0       │ Action Required * │
+│ Critical │ Enforce Kubelet client TLS authentication          │         0        │       0       │ Action Required * │
+│   High   │ Applications credentials in configuration files    │         3        │       69      │        96%        │
+│   High   │ HostNetwork access                                 │         9        │       31      │        71%        │
+│   High   │ Insecure capabilities                              │         1        │       31      │        97%        │
+│   High   │ Privileged container                               │         4        │       31      │        87%        │
+│   High   │ Ensure CPU limits are set                          │        29        │       31      │         6%        │
+│   High   │ Ensure memory limits are set                       │        24        │       31      │        23%        │
+│  Medium  │ Prevent containers from allowing command execution │         2        │      122      │        98%        │
+│  Medium  │ Non-root containers                                │        23        │       31      │        26%        │
+│  Medium  │ Allow privilege escalation                         │        13        │       31      │        58%        │
+│  Medium  │ Ingress and Egress blocked                         │        28        │       36      │        22%        │
+│  Medium  │ Automatic mapping of service account               │        29        │      107      │        73%        │
+│  Medium  │ Administrative Roles                               │         2        │      122      │        98%        │
+│  Medium  │ Cluster internal networking                        │        13        │       16      │        19%        │
+│  Medium  │ Linux hardening                                    │        11        │       31      │        65%        │
+│  Medium  │ Secret/etcd encryption enabled                     │         1        │       1       │         0%        │
+│  Medium  │ Audit logs enabled                                 │         1        │       1       │         0%        │
+│  Medium  │ Nginx Ingress Controller End of Life               │         1        │       27      │        96%        │
+│    Low   │ Immutable container filesystem                     │        17        │       31      │        45%        │
+│    Low   │ PSP enabled                                        │         1        │       1       │         0%        │
+├──────────┼────────────────────────────────────────────────────┼──────────────────┼───────────────┼───────────────────┤
+│          │                  Resource Summary                  │        46        │      288      │       56.92%      │
+╰──────────┴────────────────────────────────────────────────────┴──────────────────┴───────────────┴───────────────────╯
+
+🚨 * missing: hostdata.kubescape.cloud/v1beta0/KubeletInfo
+
+────────────────────────────────────────────────────────────────────────────────
+Scan Coverage Warning
+────────────────────────────────────────────────────────────────────────────────
+
+Scan coverage score: 83% (24/26 controls evaluated)
+
+The following resource types could not be collected:
+  • container.googleapis.com/v1/ClusterDescribe: failed to get cloud provider, cluster: kubernetes-admin-kubernetes
+  • eks.amazonaws.com/v1/ClusterDescribe: failed to get cloud provider, cluster: kubernetes-admin-kubernetes
+  • hostdata.kubescape.cloud/v1beta0/KubeletInfo: This control is scanned exclusively by the Kubescape operator, not the Kubescape CLI. Install the Kubescape operator:
+     https://kubescape.io/docs/install-operator/.
+  • management.azure.com/v1/ClusterDescribe: failed to get cloud provider, cluster: kubernetes-admin-kubernetes
+
+The following controls were NOT evaluated:
+  • C-0069 (missing: hostdata.kubescape.cloud/v1beta0/KubeletInfo)
+  • C-0070 (missing: hostdata.kubescape.cloud/v1beta0/KubeletInfo)
+
+To fix this, ensure the scanning identity has list/get permissions on the missing resource types.
+{"level":"info","ts":"2026-11-03T03:05:25Z","msg":"Scan results saved","filename":"private/kubescape-after.json"}
+
+Overall compliance-score (100- Excellent, 0- All failed): 57

@@ -1,0 +1,51 @@
+PASS: Role: exactly get/list pods/services
+PASS: unsafe frontend binding absent
+PASS: unsafe backend binding absent
+PASS: unsafe wildcard role absent
+PASS: db-config absent
+PASS: frontend: dedicated SA, no automount
+PASS: frontend: non-root UID
+PASS: frontend: hardened container
+PASS: frontend: Opaque Secret keys present; values suppressed
+PASS: frontend: secretKeyRef for credentials
+PASS: frontend: one Ready Pod
+PASS: frontend: live uid=101
+PASS: frontend/frontend-sa: get secrets=no
+PASS: frontend/frontend-sa: * *=no
+PASS: frontend/default: get secrets=no
+PASS: frontend/default: * *=no
+PASS: frontend: default deny plus explicit allow
+PASS: backend: dedicated SA, no automount
+PASS: backend: non-root UID
+PASS: backend: hardened container
+PASS: backend: Opaque Secret keys present; values suppressed
+PASS: backend: secretKeyRef for credentials
+PASS: backend: one Ready Pod
+PASS: backend: live uid=999
+PASS: backend/backend-sa: get secrets=no
+PASS: backend/backend-sa: * *=no
+PASS: backend/default: get secrets=no
+PASS: backend/default: * *=no
+PASS: backend: default deny plus explicit allow
+PASS: backend PSA baseline
+PASS: rejected probe Pod absent
+PASS: final course VM verification completed
+Warning: resource namespaces/frontend is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by kubectl apply. kubectl apply should only be used on resources created declaratively by either kubectl create --save-config or kubectl apply. The missing annotation will be patched automatically.
+namespace/frontend configured (server dry run)
+namespace/backend configured (server dry run)
+serviceaccount/frontend-sa unchanged (server dry run)
+serviceaccount/backend-sa unchanged (server dry run)
+role.rbac.authorization.k8s.io/frontend-reader unchanged (server dry run)
+rolebinding.rbac.authorization.k8s.io/frontend-reader unchanged (server dry run)
+secret/db-secret unchanged (server dry run)
+secret/db-secret unchanged (server dry run)
+configmap/frontend-config unchanged (server dry run)
+deployment.apps/frontend configured (server dry run)
+deployment.apps/backend unchanged (server dry run)
+service/frontend unchanged (server dry run)
+service/backend unchanged (server dry run)
+namespace/backend unchanged (server dry run)
+networkpolicy.networking.k8s.io/default-deny unchanged (server dry run)
+networkpolicy.networking.k8s.io/default-deny unchanged (server dry run)
+networkpolicy.networking.k8s.io/frontend-egress unchanged (server dry run)
+networkpolicy.networking.k8s.io/backend-ingress unchanged (server dry run)

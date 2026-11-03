@@ -1,30 +1,20 @@
-# Проверка выполнения требований
+# Проверка требований спринта
 
-| Шаг | Требование | Результат и доказательство |
+| Шаг | Требование | Доказательство |
 |---|---|---|
-| 1 | Пять типов дефектов через kubectl JSONPath | [Privileged, ConfigMap, env, default SA, wildcard RBAC](screenshots/evidence/03-jsonpath-before.txt) |
-| 1 | Kubescape NSA baseline и таблица рисков | [Baseline JSON](screenshots/evidence/kubescape-before.json), [таблица в отчёте](REPORT.md#1-диагностика-и-аудит) |
-| 2 | frontend-sa, Role/RoleBinding с get/list pods/services | [Проверка прав](screenshots/evidence/05-rbac-after.txt) |
-| 2 | Отказ create/delete, чтения Secret и доступа в backend | [can-i с группами ServiceAccount](screenshots/evidence/20-review-rbac-secrets-psa.txt) |
-| 2 | Небезопасные ClusterRoleBinding/ClusterRole удалены | [Проверка отсутствия объектов и wildcard-доступа](screenshots/evidence/20-review-rbac-secrets-psa.txt) |
-| 3 | Opaque Secret отдельно в frontend/backend, secretKeyRef | [Миграция и проверка env](screenshots/evidence/06-secrets.txt) |
-| 3 | ConfigMap удалён; значения credentials не выводятся | [Проверка Secret и Pod](screenshots/evidence/20-review-rbac-secrets-psa.txt) |
-| 4 | PSA baseline, безопасный SecurityContext, non-root | [Параметры и UID](screenshots/evidence/20-review-rbac-secrets-psa.txt) |
-| 4 | Admission отклоняет privileged Pod | [Forbidden: violates PodSecurity](screenshots/evidence/20-review-rbac-secrets-psa.txt) |
-| 5 | Default-deny в обоих namespace, DNS и TCP 5432 | [NetworkPolicy](manifests/secure/30-network.yaml) |
-| 5 | frontend→backend разрешён; outsider→backend запрещён | [До/после политик](screenshots/evidence/08-network.txt), [повторные TCP-пробы](screenshots/evidence/19-review-final-verification.txt) |
-| 5 | backend→frontend запрещён при работающем listener | [Контроль listener и отказ TCP](screenshots/evidence/19-review-final-verification.txt) |
-| 6 | Повторный NSA JSON и сравнение FAIL/OK | [After JSON](screenshots/evidence/kubescape-after.json), [сравнение](screenshots/evidence/comparison.md) |
-| 6 | Ручные исправления и автоматическое предотвращение | [RBAC, Secrets, Pod Security, NetworkPolicy](REPORT.md), [PSA deny](screenshots/evidence/20-review-rbac-secrets-psa.txt) |
-| 6 | Falco/Falcosidekick | [Новое событие и совпадающий payload](screenshots/evidence/18-review-falco.txt) |
-| Сдача | Применимые манифесты и инструкция воспроизведения | [Server-side dry-run](screenshots/evidence/19-review-final-verification.txt), [README](README.md) |
+| 1 | Пять типов дефектов, kubectl JSONPath, таблица риска/приоритета | [JSONPath](screenshots/evidence/vm/run-20261103/01-audit-before.txt), [отчёт](REPORT.md#1-диагностика-и-аудит) |
+| 1 | Kubescape NSA baseline | [JSON](screenshots/evidence/vm/run-20261103/kubescape-before.json), [лог](screenshots/evidence/vm/run-20261103/kubescape-before.log) |
+| 2 | frontend-sa, Role/RoleBinding get/list pods/services; нет wildcard | [RBAC-манифест](manifests/vm/secure/10-rbac.yaml), [can-i](screenshots/evidence/vm/run-20261103/02-rbac.txt) |
+| 2 | Удалены опасные binding; default SA не имеет wildcard | [Оба namespace, положительные/отрицательные can-i](screenshots/evidence/vm/run-20261103/02-rbac.txt) |
+| 3 | Opaque Secret в обоих namespace; data base64; secretKeyRef | [Secret](manifests/vm/secure/20-secrets.yaml), [Deployment](manifests/vm/secure/30-workloads.yaml) |
+| 3 | Проверка env внутри Pod; ConfigMap удалён | [Проверки переменных и SQL без вывода credentials](screenshots/evidence/vm/run-20261103/03-secrets.txt) |
+| 4 | PSA baseline, SecurityContext, non-root, нет privileged | [UID и параметры](screenshots/evidence/vm/run-20261103/04-pod-security.txt), [финальная проверка](screenshots/evidence/vm/run-20261103/09-final-verification.txt) |
+| 4 | PSA автоматически блокирует privileged Pod | [Forbidden и отсутствие Pod](screenshots/evidence/vm/run-20261103/04-pod-security.txt) |
+| 5 | Default-deny Ingress/Egress обоих namespace; DNS; TCP 5432 с обеих сторон | [NetworkPolicy](manifests/vm/secure/50-network.yaml) |
+| 5 | frontend→backend работает, сторонний Pod блокируется | [До/после](screenshots/evidence/vm/run-20261103/05-network.txt), [повторная проверка](screenshots/evidence/vm/run-20261103/05-network-repeat.txt) |
+| 6 | Повторный NSA JSON, сравнение FAIL/OK | [After JSON](screenshots/evidence/vm/run-20261103/kubescape-after.json), [сравнение](screenshots/evidence/vm/run-20261103/comparison.md) |
+| 6 | Ручные исправления и автоматическая защита PSA | [Шаги 2–5 отчёта](REPORT.md), [Admission rejection](screenshots/evidence/vm/run-20261103/04-pod-security.txt) |
+| 6 | Событие Falco, скриншот UI | [JSON](screenshots/evidence/vm/run-20261103/07-falco-events.json), [UI](screenshots/evidence/vm/run-20261103/falco-ui-event.png) |
+| Сдача | Применимые манифесты; отчёт; До/После; проверки | [Server-side dry-run и финальные проверки](screenshots/evidence/vm/run-20261103/09-final-verification.txt), [README](README.md), [REPORT](REPORT.md) |
 
-Ограничения Kubescape и Falco приведены в [REPORT.md](REPORT.md#ограничения).
-
-Повторная проверка:
-
-```bash
-scripts/review-live.sh
-scripts/verify-final.sh
-scripts/08-falco.sh
-```
+Все шесть шагов подтверждены. Итог frontend/backend: **0 failed-пар ресурс/control**. Общекластерные FAIL **19 → 19** приведены без исключения инфраструктурных нарушений. Ограничения охвата — в [отчёте](REPORT.md#ограничения).

@@ -1,0 +1,160 @@
+{
+  "apiVersion": "v1",
+  "kind": "List",
+  "items": [
+    {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {
+        "name": "db-config",
+        "namespace": "backend"
+      },
+      "data": {
+        "host": "backend",
+        "port": "5432",
+        "username": "demo_user",
+        "password": "DEMO_ONLY_VM_password_20261103"
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "frontend",
+        "namespace": "frontend"
+      },
+      "spec": {
+        "replicas": 1,
+        "revisionHistoryLimit": 2,
+        "selector": {
+          "matchLabels": {
+            "app": "frontend"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "frontend"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "name": "frontend",
+                "image": "nginx:1.25",
+                "ports": [
+                  {
+                    "containerPort": 80
+                  }
+                ],
+                "resources": {},
+                "env": [
+                  {
+                    "name": "DB_HOST",
+                    "value": "backend.backend.svc.cluster.local"
+                  },
+                  {
+                    "name": "DB_PASSWORD",
+                    "value": "DEMO_ONLY_VM_password_20261103"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "backend",
+        "namespace": "backend"
+      },
+      "spec": {
+        "replicas": 1,
+        "revisionHistoryLimit": 2,
+        "selector": {
+          "matchLabels": {
+            "app": "backend"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "backend"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "name": "backend",
+                "image": "postgres:15",
+                "ports": [
+                  {
+                    "containerPort": 5432
+                  }
+                ],
+                "resources": {},
+                "env": [
+                  {
+                    "name": "POSTGRES_PASSWORD",
+                    "valueFrom": {
+                      "configMapKeyRef": {
+                        "name": "db-config",
+                        "key": "password"
+                      }
+                    }
+                  }
+                ],
+                "securityContext": {
+                  "privileged": true
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "frontend",
+        "namespace": "frontend"
+      },
+      "spec": {
+        "selector": {
+          "app": "frontend"
+        },
+        "ports": [
+          {
+            "port": 80,
+            "targetPort": 80,
+            "protocol": "TCP"
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "backend",
+        "namespace": "backend"
+      },
+      "spec": {
+        "selector": {
+          "app": "backend"
+        },
+        "ports": [
+          {
+            "port": 5432,
+            "targetPort": 5432,
+            "protocol": "TCP"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+[
+  {
+    "hostname": "dso06-master-20261103-51aee1912a7d",
+    "output": "03:05:58.669327919: Notice A shell was spawned in a container with an attached terminal | evt_type=execve user=nginx user_uid=101 user_loginuid=-1 process=sh proc_exepath=/usr/bin/dash parent=runc command=sh -c echo DSO06_SPRINT_e07f4b5802fe4fd6987baa2f605867dd >/dev/null; id; sleep 2 terminal=34816 exe_flags=EXE_LOWER_LAYER container_id=f5981cb1cea9 container_name=frontend container_image_repository=docker.io/library/nginx container_image_tag=1.25 k8s_pod_name=frontend-66f948fbb9-mzflb k8s_ns_name=frontend",
+    "output_fields": {
+      "container.id": "f5981cb1cea9",
+      "container.image.repository": "docker.io/library/nginx",
+      "container.image.tag": "1.25",
+      "container.name": "frontend",
+      "evt.arg.flags": "EXE_LOWER_LAYER",
+      "evt.time": 1793675158669327919,
+      "evt.type": "execve",
+      "k8s.ns.name": "frontend",
+      "k8s.pod.name": "frontend-66f948fbb9-mzflb",
+      "proc.cmdline": "sh -c echo DSO06_SPRINT_e07f4b5802fe4fd6987baa2f605867dd >/dev/null; id; sleep 2",
+      "proc.exepath": "/usr/bin/dash",
+      "proc.name": "sh",
+      "proc.pname": "runc",
+      "proc.tty": 34816,
+      "user.loginuid": -1,
+      "user.name": "nginx",
+      "user.uid": 101
+    },
+    "priority": "Notice",
+    "rule": "Terminal shell in container",
+    "source": "syscall",
+    "tags": [
+      "T1059",
+      "container",
+      "maturity_stable",
+      "mitre_execution",
+      "shell"
+    ],
+    "time": "2026-11-03T03:05:58.669327919Z"
+  }
+]

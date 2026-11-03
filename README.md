@@ -1,86 +1,83 @@
 # Практическая работа по безопасности Kubernetes
 
-При создании учебной виртуальной машины постоянно возникает ошибка: «Произошла ошибка при создании ресурса. Пожалуйста, повторите запрос позже или обратитесь к куратору». Поэтому работа выполнена на локальном Docker вместо выделенных для задания ВМ.
+Работа выполнена на учебной ВМ DSO-06. Результаты всех шести шагов — в [REPORT.md](REPORT.md), проверка требований — в [REVIEW.md](REVIEW.md).
 
-## Стенд
+Стенд: Ubuntu 22.04.5, Kubernetes 1.31.2, Calico, frontend `nginx:1.25`, backend `postgres:15`. Использованы исходные приложения учебного окружения. Kubescape — 4.0.16; Falco — 0.45.2.
 
-- k3d 5.9.0, K3s v1.34.5-k3s1, один узел с лимитом памяти 3 GiB.
-- Flannel и встроенный контроллер NetworkPolicy kube-router.
-- frontend и backend на BusyBox 1.37.0: TCP-порты 8080 и 5432. Backend — учебный TCP-сервис, возвращающий `lab-backend`.
-- kubectl 1.34.5, Helm 4.2.3, Kubescape 4.0.16.
+## Результаты
 
-Результаты шести этапов — в [REPORT.md](REPORT.md), соответствие требованиям — в [REVIEW.md](REVIEW.md), сравнение сканирований — в [comparison.md](screenshots/evidence/comparison.md).
-
-## Запуск
-
-Требуются Docker Desktop, Python 3, bash, curl, k3d, Helm и Kubescape. На macOS инструменты можно установить через Homebrew:
-
-```bash
-brew install k3d kubescape helm
-```
-
-Из корня репозитория:
-
-```bash
-scripts/00-kubectl.sh
-scripts/01-cluster.sh
-
-# 1. Исходная уязвимая конфигурация и аудит
-scripts/02-baseline.sh
-scripts/audit-jsonpath.sh
-scripts/scan.sh before
-
-# 2–5. RBAC, Secrets, Pod Security и NetworkPolicy
-scripts/03-rbac.sh
-scripts/04-secrets.sh
-scripts/05-pod-security.sh
-scripts/06-network.sh
-
-# 6. Повторный аудит и сравнение
-scripts/07-final-audit.sh
-scripts/scan.sh after
-python3 scripts/compare-scans.py
-
-# Runtime-мониторинг
-scripts/08-falco.sh
-```
-
-Полный цикл выполняется на свежем кластере `devsecops-lab`. Baseline-скрипт отказывается применять уязвимую конфигурацию поверх исправленного состояния. Скрипты используют отдельный kubeconfig `.local/kubeconfig` и контекст `k3d-devsecops-lab`.
-
-Повторный `scan.sh before/after` перезаписывает одноимённые отчёты. Перед новым циклом сохраните нужные результаты. Исходные JSON находятся в `.local/`, копии со скрытыми значениями Secret — в `screenshots/evidence/`.
+- Выявлены пять типов дефектов; исправлены RBAC, хранение credentials, SecurityContext и NetworkPolicy.
+- PSA baseline блокирует создание privileged Pod.
+- frontend подключается к backend на TCP 5432; Pod из стороннего namespace получает timeout.
+- Failed-пары «ресурс/control» в frontend/backend: **23 → 0**. Общие FAIL controls кластера: **19 → 19**, OK: **5 → 5**; оставшиеся нарушения относятся к инфраструктуре.
+- [Сравнение Kubescape](screenshots/evidence/vm/run-20261103/comparison.md), [скриншот Falco UI](screenshots/evidence/vm/run-20261103/falco-ui-event.png), [итоговая проверка](screenshots/evidence/vm/run-20261103/09-final-verification.txt).
 
 ## Манифесты
 
 | Каталог | Назначение |
 |---|---|
-| `manifests/baseline/` | Исходные пять типов уязвимостей |
-| `manifests/secure/` | Исправленные RBAC, Secrets, Deployment, PSA и NetworkPolicy |
-| `manifests/tests/` | Privileged Pod для отрицательной пробы PSA и сторонний сетевой Pod |
-| `monitoring/` | Конфигурация Falco/Falcosidekick |
+| `manifests/vm/baseline/` | Воспроизведение исходных пяти дефектов с вымышленными credentials |
+| `manifests/vm/secure/` | ServiceAccount, Role/RoleBinding, Secret, Deployment, PSA и NetworkPolicy для ВМ |
+| `manifests/vm/tests/` | Отрицательная проба PSA и сторонний сетевой Pod |
+| `scripts/vm/` | Последовательное исправление и проверки учебного кластера |
+| `screenshots/evidence/vm/run-20261103/` | Выводы команд, JSON сканирования, сравнение и Falco UI |
 
-Итоговую конфигурацию на чистом кластере можно применить отдельно:
-
-```bash
-bash
-source scripts/env.sh
-k apply -f manifests/secure/00-namespaces.yaml
-k apply -f manifests/secure/10-rbac.yaml
-k apply -f manifests/secure/20-workloads.yaml
-k apply -f manifests/secure/30-network.yaml
-```
-
-Для перехода с baseline используйте этапные скрипты: они также удаляют небезопасные ClusterRoleBinding, ClusterRole, ConfigMap и неактивные ReplicaSet. Наборы baseline и secure не применяются одновременно; тестовый privileged Pod должен быть отклонён.
-
-В Secret используются только вымышленные учебные credentials. Base64 не шифрует данные; encryption at rest не настраивалось. Kubeconfig и исходные выгрузки исключены из Git.
-
-## Проверка результата
+Итоговую конфигурацию можно применить на подготовленном Kubernetes 1.31 с Calico:
 
 ```bash
-scripts/review-live.sh
-scripts/verify-final.sh
-scripts/08-falco.sh
+kubectl apply -f manifests/vm/secure/
 ```
 
-Проверяются права ServiceAccount, Secret references, UID, SecurityContext, отказ PSA, разрешённые и запрещённые TCP-соединения. Falco-тест использует уникальный маркер и сопоставляет время события, PID и команду с payload Falcosidekick.
+При переходе с уязвимого состояния используйте этапные скрипты ниже: `apply` не удаляет старые ClusterRoleBinding, ClusterRole, ConfigMap и ReplicaSet. Baseline предназначен только для отдельного учебного стенда; не применяйте его поверх исправленного состояния. Тестовый privileged Pod должен быть отклонён.
 
-Ограничения Kubescape и eBPF описаны в [REPORT.md](REPORT.md). Для остановки стенда: `k3d cluster stop devsecops-lab`; для запуска: `k3d cluster start devsecops-lab`.
+## Выполнение на учебной ВМ
+
+Подключитесь к master способом, указанным сервисом учебных окружений, и скопируйте репозиторий на ВМ. Требуются bash, Python 3, curl, kubectl и права администратора кластера. Команды выполняются из корня репозитория. Контекст по умолчанию — `kubernetes-admin@kubernetes`; `VM_KUBECTL_CONTEXT` позволяет задать другой явно. Скрипты сохраняют UID кластера и проверяют его при повторных запусках.
+
+На свежем DSO-06 уязвимые приложения уже существуют. Если их нет, на отдельном учебном кластере сначала примените `manifests/vm/baseline/`.
+
+```bash
+set -euo pipefail
+umask 077
+evidence="screenshots/evidence/vm/run-$(date -u +%Y%m%dT%H%M%SZ)"
+mkdir -p "$evidence"
+
+# 1. Подготовка, JSONPath-аудит, NSA baseline
+scripts/vm/00-prepare.sh | tee "$evidence/00-prepare.txt"
+scripts/vm/inventory.sh | tee "$evidence/00-inventory.txt"
+scripts/vm/audit.sh | tee "$evidence/01-audit-before.txt"
+scripts/vm/06-scan.sh before 2>&1 | tee "$evidence/kubescape-before.log"
+python3 scripts/vm/redact.py private/kubescape-before.json "$evidence/kubescape-before.json"
+
+# 2–5. RBAC, Secret, SecurityContext/PSA, сеть
+scripts/vm/02-rbac.sh 2>&1 | tee "$evidence/02-rbac.txt"
+scripts/vm/03-secrets.sh 2>&1 | tee "$evidence/03-secrets.txt"
+scripts/vm/04-pod-security.sh 2>&1 | tee "$evidence/04-pod-security.txt"
+scripts/vm/05-network.sh 2>&1 | tee "$evidence/05-network.txt"
+
+# 6. Повторный NSA, сравнение, итоговая проверка
+scripts/vm/06-scan.sh after 2>&1 | tee "$evidence/kubescape-after.log"
+python3 scripts/vm/redact.py private/kubescape-after.json "$evidence/kubescape-after.json"
+python3 scripts/vm/compare.py "$evidence"
+scripts/vm/audit.sh | tee "$evidence/08-audit-after.txt"
+scripts/vm/verify.sh 2>&1 | tee "$evidence/09-final-verification.txt"
+```
+
+`00-prepare.sh` проверяет SHA-256 закреплённого Kubescape. Для обоих сканирований используются одни и те же файлы NSA, control inputs и exceptions. `06-scan.sh after` также удаляет неактивные ревизии приложений и выполняет server-side dry-run манифестов.
+
+Для Falco выполните из терминала с TTY:
+
+```bash
+marker="DSO06_SPRINT_$(python3 -c 'import uuid; print(uuid.uuid4().hex)')"
+scripts/vm/07-falco-event.sh "$marker"
+```
+
+В Falcosidekick UI найдите событие по маркеру и сохраните скриншот с правилом, namespace и командой. Используются установленные в DSO-06 Falco/Falcosidekick; событие вызывает обычное правило `Terminal shell in container`. Доступ к UI организуется через SSH-туннель и port-forward на `svc/falco-falcosidekick-ui:2802`, привязанные к `127.0.0.1`; учётные данные берутся из окружения ВМ и не сохраняются в репозитории.
+
+## Данные и ограничения
+
+В манифестах только демонстрационные credentials. Значения переменных проверяются внутри Pod без вывода. Base64 не шифрует Secret; encryption at rest не настраивалось. PostgreSQL использует учебное хранилище `emptyDir`, которое не сохраняет БД при пересоздании Pod.
+
+Исходные JSON сканера, кеш, SSH-настройки и kubeconfig исключены из Git. Публикуемые JSON обработаны `redact.py`: скрыты Secret, значения ConfigMap/env и annotations; статусы проверок сохранены. Полный охват узла Kubescape без host scan/operator не обеспечивается; ограничения и остаточные FAIL указаны в отчёте.
+
+Предыдущий вариант на Docker сохранён отдельно: [инструкция](README-DOCKER.md), [отчёт](REPORT-DOCKER.md), [проверки](REVIEW-DOCKER.md). Основные результаты этой работы относятся к ВМ и находятся в `manifests/vm/`, `scripts/vm/`, `screenshots/evidence/vm/run-20261103/`.

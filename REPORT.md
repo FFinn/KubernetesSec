@@ -1,131 +1,133 @@
-# Отчёт о выполнении практики Kubernetes Security
+# Отчёт о безопасности Kubernetes
 
-При создании учебной виртуальной машины постоянно возникает ошибка: «Произошла ошибка при создании ресурса. Пожалуйста, повторите запрос позже или обратитесь к куратору». Поэтому работа выполнена на локальном Docker вместо выделенных для задания ВМ. Стенд — одноузловой K3s в k3d с поддержкой NetworkPolicy через kube-router.
+Стенд DSO-06: Ubuntu 22.04.5, Kubernetes 1.31.2, Calico; один Ready узел. Исходные приложения: frontend `nginx:1.25`, backend `postgres:15`. Проверки выполнены 03.11.2026; время в логах — UTC.
 
 ## 1. Диагностика и аудит
 
-Развёрнуты frontend/backend Deployments и backend Service на TCP 5432. В исходной конфигурации выявлены пять типов проблем:
+Использованы `kubectl` с JSONPath для Pod/Deployment, ServiceAccount, ConfigMap, переменных окружения и RBAC. Значения credentials в отчёте не выводятся.
 
 | Тип | Namespace | Ресурс | Риск | Приоритет |
 |---|---|---|---|---|
-| Привилегированный контейнер | backend | Deployment/backend | Расширенный доступ к ядру узла, возможность выхода из контейнера | Критический |
-| Пароль в ConfigMap | backend | ConfigMap/db-config, ключ password | Раскрытие credentials при чтении конфигурации | Высокий |
-| Пароль в plaintext env | frontend | Deployment/frontend, DB_PASSWORD | Раскрытие пароля в манифестах Pod/Deployment и истории ревизий | Высокий |
-| Использование default ServiceAccount | frontend | Deployment/frontend | Общая идентичность с избыточными правами через binding | Высокий |
-| Wildcard RBAC | frontend / cluster-scoped | ClusterRole/lab-unsafe-wildcard, ClusterRoleBinding/lab-unsafe-default | Все действия над всеми ресурсами кластера | Критический |
+| Привилегированный контейнер | backend | Deployment/backend | Доступ к возможностям узла, выход из контейнера | Критический |
+| Пароль в ConfigMap | backend | ConfigMap/db-config, ключ password | Раскрытие credentials через чтение конфигурации | Высокий |
+| Plaintext env | frontend | Deployment/frontend, DB_PASSWORD | Пароль доступен в спецификации и истории ревизий | Высокий |
+| default ServiceAccount | frontend | Deployment/frontend | Общая идентичность с избыточными правами через binding | Высокий |
+| Wildcard RBAC | frontend, backend / cluster-scoped | ClusterRole/unsafe-role; ClusterRoleBinding/unsafe-binding-frontend и unsafe-binding-backend | Любые операции над всеми ресурсами кластера от обоих default SA | Критический |
 
-JSONPath-запросы показали privileged, ServiceAccount, источники переменных окружения, данные ConfigMap, wildcard-правила и binding. `kubectl auth can-i '*' '*' --as=system:serviceaccount:frontend:default` вернул **yes**.
+До исправления `kubectl auth can-i '*' '*'` с impersonation default SA возвращал `yes` для обоих namespace. Backend также использовал default SA. Выполнен `kubescape scan framework nsa` с JSON-выводом.
 
-Доказательства: [JSONPath](screenshots/evidence/03-jsonpath-before.txt), [исходные проверки доступа](screenshots/evidence/04-access-before.txt), [Kubescape baseline JSON](screenshots/evidence/kubescape-before.json), [лог сканирования](screenshots/evidence/kubescape-before.log).
+Доказательства: [инвентаризация](screenshots/evidence/vm/run-20261103/00-inventory.txt), [JSONPath до](screenshots/evidence/vm/run-20261103/01-audit-before.txt), [can-i до/после](screenshots/evidence/vm/run-20261103/02-rbac.txt), [NSA baseline JSON](screenshots/evidence/vm/run-20261103/kubescape-before.json), [лог](screenshots/evidence/vm/run-20261103/kubescape-before.log).
 
 ## 2. Исправление RBAC
 
-Созданы ServiceAccount/frontend-sa, Role/frontend-reader и RoleBinding/frontend-reader в namespace frontend. Роль разрешает только `get/list` для pods/services. Deployment/frontend переведён на frontend-sa; монтирование SA token отключено, поскольку приложение не использует Kubernetes API.
+В frontend созданы ServiceAccount/frontend-sa, Role/frontend-reader и RoleBinding/frontend-reader. Role разрешает только `get/list` для pods/services в frontend, wildcard отсутствует. Backend переведён на отдельный backend-sa без дополнительных разрешений. У обоих приложений отключено монтирование SA token.
 
-ClusterRoleBinding/lab-unsafe-default и ClusterRole/lab-unsafe-wildcard удалены.
+Удалены оба небезопасных ClusterRoleBinding и ClusterRole/unsafe-role. Проверки учитывают группы ServiceAccount при impersonation.
 
-| Проверка | Результат |
+| Проверка | После |
 |---|---|
-| frontend-sa: get/list pods в frontend | yes / yes |
-| frontend-sa: get/list services в frontend | yes / yes |
-| frontend-sa: create/delete pods в frontend | no / no |
-| frontend-sa: get secrets в frontend | no |
+| frontend-sa: get/list pods, services в frontend | yes |
+| frontend-sa: create/delete pods | no |
+| frontend-sa: get secrets | no |
 | frontend-sa: get pods в backend | no |
-| default SA: wildcard-доступ | no |
-| default SA: get secrets в backend | no |
+| default SA frontend и backend: wildcard | no |
+| default SA frontend и backend: get secrets | no |
 
-Доказательства: [проверка can-i](screenshots/evidence/05-rbac-after.txt), [проверка с группами ServiceAccount](screenshots/evidence/20-review-rbac-secrets-psa.txt).
+Доказательства: [полный can-i и удаление binding](screenshots/evidence/vm/run-20261103/02-rbac.txt), [итоговая проверка](screenshots/evidence/vm/run-20261103/09-final-verification.txt).
 
 ## 3. Миграция секретов
 
-В каждом namespace создан отдельный Secret/db-secret типа Opaque с ключами `username` и `password` в `data` base64. Оба Deployment используют DB_USERNAME и DB_PASSWORD через `secretKeyRef` на Secret своего namespace.
+В frontend и backend создан отдельный Secret/db-secret типа Opaque с ключами `username`, `password` в `data` base64. Frontend использует DB_USERNAME/DB_PASSWORD, backend — POSTGRES_USER/POSTGRES_PASSWORD; все credentials подключены через `secretKeyRef` к Secret своего namespace. ConfigMap/backend/db-config удалён.
 
-Наличие переменных проверено внутри контейнеров через `test -n`, без вывода значений. ConfigMap/backend/db-config удалён. Прежние last-applied annotations и неактивные ReplicaSet с plaintext credentials удалены.
+Внутри контейнеров проверено непустое значение обеих переменных без вывода содержимого. Backend выполнил `SELECT 1` по TCP с credentials из env. Прежние last-applied annotations и неактивные ReplicaSet с открытыми credentials удалены.
 
-Все credentials вымышленные. Base64 не является шифрованием; encryption at rest в стенде не настраивалось.
+В применённых манифестах используются вымышленные учебные значения. Base64 не является шифрованием; encryption at rest в рамках задания не настраивалось.
 
-Доказательства: [миграция и проверка env](screenshots/evidence/06-secrets.txt), [проверка Secret и Pod](screenshots/evidence/20-review-rbac-secrets-psa.txt).
+Доказательства: [миграция, ссылки Secret и SQL](screenshots/evidence/vm/run-20261103/03-secrets.txt), [JSONPath после](screenshots/evidence/vm/run-20261103/08-audit-after.txt), [итоговая проверка](screenshots/evidence/vm/run-20261103/09-final-verification.txt).
 
 ## 4. Pod Security
 
-В обоих Deployment настроены:
+В обоих Deployment настроены `runAsNonRoot: true`, `seccompProfile: RuntimeDefault`, `allowPrivilegeEscalation: false`, `privileged: false`, `readOnlyRootFilesystem: true`, `capabilities.drop: [ALL]` и ограничения ресурсов. Frontend работает с UID/GID 101, backend — 999; UID проверены внутри контейнеров.
 
-- `runAsNonRoot: true`, UID/GID 10001;
-- `seccompProfile.type: RuntimeDefault`;
-- `privileged: false`, `allowPrivilegeEscalation: false`;
-- `readOnlyRootFilesystem: true`, `capabilities.drop: [ALL]`.
+Nginx слушает 8080, Service сохраняет порт 80. Записываемые временные каталоги вынесены в `emptyDir`. PostgreSQL использует `emptyDir` для данных и сокета. Проверены HTTP frontend и SQL backend.
 
-В backend включён `pod-security.kubernetes.io/enforce=baseline`, версия v1.34. Рабочие контейнеры запускаются с UID 10001. Старые privileged Pod удалены после rollout; PSA не завершает существующие Pod автоматически.
+В backend включён PSA `enforce=baseline`, `enforce-version=v1.31`. Попытка **создать** privileged Pod получила:
 
-Попытка создать privileged Pod получила `Forbidden: violates PodSecurity "baseline:v1.34": privileged`. Проверено, что тестовый Pod не создан. Это автоматическая блокировка опасной конфигурации на Admission.
+```text
+Forbidden: violates PodSecurity "baseline:v1.31": privileged
+```
 
-Доказательства: [SecurityContext и PSA rejection](screenshots/evidence/07-psa.txt), [повторная admission-проба](screenshots/evidence/20-review-rbac-secrets-psa.txt).
+Проверено отсутствие тестового Pod. PSA предотвращает создание новых опасных Pod; старые экземпляры заменены rollout. Предупреждение при включении PSA относилось к завершающемуся старому Pod; в итоговом состоянии привилегированных контейнеров приложений нет.
+
+Доказательства: [SecurityContext, UID, SQL и Admission rejection](screenshots/evidence/vm/run-20261103/04-pod-security.txt), [финальные Pod](screenshots/evidence/vm/run-20261103/09-final-verification.txt).
 
 ## 5. NetworkPolicy
 
-В frontend и backend применены default-deny для Ingress/Egress. Разрешены:
-
-- frontend `app=frontend` → backend `app=backend`, TCP 5432;
-- frontend → CoreDNS в kube-system, UDP/TCP 53.
-
-Для TCP 5432 настроены обе стороны: frontend Egress и backend Ingress. Namespace selector и Pod selector объединены в одном peer. Ответный трафик разрешённого соединения допускается conntrack.
+В frontend и backend установлены default-deny для Ingress и Egress. Для frontend разрешены DNS к CoreDNS kube-system по UDP/TCP 53 и Egress к backend на TCP 5432. Backend разрешает Ingress TCP 5432 только от frontend. Namespace selector и Pod selector находятся в одном peer, поэтому должны совпасть оба условия.
 
 | Проверка | Результат |
 |---|---|
-| outsider → backend:5432 до политик | Получен `lab-backend` |
-| outsider → backend:5432 после политик | TCP отказ, nc exit 1 |
-| frontend → backend Service:5432 после политик | Получен `lab-backend` |
-| DNS lookup backend.backend.svc.cluster.local из frontend | Успешно |
-| frontend → собственный listener:8080 | Получен `lab-frontend` |
-| backend → frontend:8080 | TCP отказ, nc exit 1 |
+| Сторонний Pod → backend Pod IP:5432 до политик | PostgreSQL accepting connections |
+| Тот же Pod → backend после политик | no response, pg_isready exit 2 |
+| frontend → backend Service:5432 после политик | TCP соединение установлено |
+| frontend → DNS имени backend | Успешно |
+| frontend → собственный HTTP listener | HTTP успешно |
+| backend → localhost:5432 | PostgreSQL accepting connections |
 
-У стороннего Pod также стоит `app=frontend`, но namespace outsider не соответствует разрешающей политике. Перед отрицательной пробой проверяется доступность контейнера и nc; тест фиксирует завершение nc и его код, поэтому ошибка `kubectl exec` не считается блокировкой трафика.
+Сторонний Pod имеет метку `app=frontend`, но находится в namespace attacker-test. Проверка завершения `pg_isready` отличает сетевую блокировку от ошибки `kubectl exec`. Положительная TCP-проба прекращается при ошибке соединения (`bash -ec`). Тестовый namespace удалён до повторного сканирования.
 
-Доказательства: [проверки до/после политик](screenshots/evidence/08-network.txt), [повторные TCP-пробы](screenshots/evidence/19-review-final-verification.txt), [правила kube-router](screenshots/evidence/12-network-enforcement.txt).
+Доказательства: [до/после политик](screenshots/evidence/vm/run-20261103/05-network.txt), [повторные проверки](screenshots/evidence/vm/run-20261103/05-network-repeat.txt), [манифесты NetworkPolicy](manifests/vm/secure/50-network.yaml).
 
-## 6. Повторное сканирование и мониторинг
+## 6. Kubescape и Falco
 
-Выполнены два сканирования `kubescape scan framework nsa --format json --output ...` с `--keep-local` и `--host-scan=false`. Версия Kubescape — 4.0.16. Повторный запуск использовал сохранённый набор NSA. Оба сканирования выполнены до установки Falco.
+Оба NSA-сканирования выполнены Kubescape 4.0.16 с одинаковыми NSA policy, control inputs и exceptions. SHA-256 входных файлов сохранены в логе after; используются `--keep-local`, `--host-scan=false`, `--fail-on-degraded-config` и один контекст кластера. Набор из 26 control ID совпадает.
 
 | Метрика | До | После |
 |---|---:|---:|
-| FAIL controls | 13 | 11 |
-| OK controls | 8 | 10 |
-| Skipped / Action Required | 5 | 5 |
-| Compliance score | 54,77% | 68,01% |
-| C-0012: credentials in configuration, failed resources | 2 | 0 |
-| C-0057: privileged container, failed resources | 1 | 0 |
-| C-0016: privilege escalation, failed resources | 3 | 1 |
-| C-0034: automatic SA mapping, failed resources | 4 | 2 |
+| FAIL controls всего кластера | 19 | 19 |
+| OK controls всего кластера | 5 | 5 |
+| Пропущенные controls | 2 | 2 |
+| Compliance score | 53,88% | 56,92% |
+| Failed-пары ресурс/control в frontend/backend | 23 | 0 |
+| C-0012, failed resources всего кластера | 5 | 3 |
+| C-0057, failed resources всего кластера | 5 | 4 |
+| C-0013, failed resources всего кластера | 25 | 23 |
+| C-0016, failed resources всего кластера | 15 | 13 |
+| C-0030, failed resources всего кластера | 30 | 28 |
 
-Вручную исправлены RBAC, Secrets, SecurityContext и NetworkPolicy. Автоматическое предотвращение повторной опасной конфигурации подтверждено отказом PSA.
+Общее число FAIL controls осталось прежним: эти controls продолжают находить нарушения в инфраструктурных namespace. Для frontend/backend failed-записи устранены. Вручную исправлены RBAC, Secrets, SecurityContext и NetworkPolicy. Автоматическое предотвращение повторной опасной конфигурации доказано отказом PSA из шага 4.
 
-Доказательства: [before JSON](screenshots/evidence/kubescape-before.json), [after JSON](screenshots/evidence/kubescape-after.json), [сравнение всех controls](screenshots/evidence/comparison.md).
+Доказательства: [before JSON](screenshots/evidence/vm/run-20261103/kubescape-before.json), [after JSON](screenshots/evidence/vm/run-20261103/kubescape-after.json), [полная таблица controls и ресурсов](screenshots/evidence/vm/run-20261103/comparison.md), [лог after](screenshots/evidence/vm/run-20261103/kubescape-after.log).
 
-Falco 0.45.0 с modern eBPF и Falcosidekick 2.32.0 установлены через Helm chart 9.2.0. Выполнение shell-команды с уникальным маркером зарегистрировано правилом `DevSecOps Lab Shell Marker`. В Falcosidekick получен payload с совпадающими `evt.time`, `proc.pid` и `proc.cmdline`.
+### Falco
 
-Доказательства: [событие и доставка](screenshots/evidence/18-review-falco.txt), [диагностика eBPF](screenshots/evidence/11-falco-startup.txt).
+Использованы предустановленные Falco 0.45.2 и Falcosidekick UI 2.2.0. Обычное правило `Terminal shell in container` зарегистрировало запуск shell с TTY в frontend: 03.11.2026 03:05:58 UTC, UID 101, source syscall, priority Notice. Команда содержит уникальный маркер `DSO06_SPRINT_e07f4b5802fe4fd6987baa2f605867dd`.
+
+[Вывод запуска](screenshots/evidence/vm/run-20261103/07-falco-trigger.txt) и [JSON события Falco](screenshots/evidence/vm/run-20261103/07-falco-events.json) соответствуют событию в UI:
+
+![Событие Terminal shell in container в frontend](screenshots/evidence/vm/run-20261103/falco-ui-event.png)
+
+UI показывает локальное время 08:05:58 (UTC+5). Использовано штатное правило Falco без изменения конфигурации мониторинга.
 
 ### Ограничения
 
-Оставшиеся FAIL относятся к системным компонентам, системным RBAC, другим namespace и тестовому outsider. В сохранённом after JSON ресурсы frontend/backend не имеют failed controls.
+Coverage Kubescape — 83,31% в обоих запусках. C-0069/C-0070 не оценены без operator KubeletInfo; host scan отключён. Неполный охват и отсутствие облачных API отражены в логах. Оставшиеся FAIL включают системный RBAC, privileged/hostNetwork инфраструктурных агентов, настройки encryption/audit и устаревшего ingress; системные компоненты в рамках задания не изменялись. Успешный тест PSA оценивается по Admission rejection: устаревший контроль PSP C-0068 сам по себе не подтверждает состояние PSA.
 
-C-0066/C-0067/C-0068 пропущены; C-0069/C-0070 не оценены без operator KubeletInfo. Host-scan отключён, облачный provider отсутствует. При повторном сканировании exceptions/controlInputs загружены из bundled defaults; после также добавлен outsider Pod. Сравнение охватывает одинаковые 26 control ID, но полная идентичность дополнительных policy inputs не обеспечена.
-
-Falco использует лабораторное правило, без Kubernetes enrichment и API audit source. eBPF сообщает о недоступности части tracepoints и ограничении TOCTOU mitigation. Внешние outputs Falcosidekick не настроены.
+Falco подтверждает одно воспроизводимое syscall-событие; это не проверка полного набора runtime-детектов. PostgreSQL использует непостоянное учебное хранилище; производственная сохранность данных не входит в эту конфигурацию.
 
 ## До/После
 
 | Область | До | После |
 |---|---|---|
-| Backend privilege | privileged=true | non-root UID 10001, privileged=false |
-| Пароль в ConfigMap | backend/db-config | ConfigMap удалён, Secret в каждом namespace |
-| Frontend env | plaintext value | secretKeyRef |
-| Frontend identity | default SA | frontend-sa с get/list pods/services |
-| Default SA wildcard | yes | no, небезопасный binding удалён |
-| Admission | Privileged Pod разрешался | PSA baseline отклоняет новый privileged Pod |
-| outsider → backend | Доступен | Заблокирован |
-| frontend → backend | Доступен | Разрешён TCP 5432 |
-| Runtime-мониторинг | Отсутствовал | Falco фиксирует событие, Falcosidekick принимает payload |
+| Backend privilege | privileged=true | privileged=false, non-root UID 999 |
+| Контейнеры приложений | Нет защитного контекста | Non-root, no escalation, seccomp, drop ALL, read-only root |
+| Пароль в backend ConfigMap | db-config | ConfigMap удалён, Secret/db-secret |
+| Frontend credentials | plaintext env | secretKeyRef |
+| Идентичность frontend | default SA | frontend-sa, Role get/list pods/services |
+| Wildcard default SA | Разрешён в обоих namespace | Оба binding и unsafe-role удалены, can-i=no |
+| Privileged Pod | Допускался исходной конфигурацией | PSA baseline отклоняет создание |
+| Сеть | Нет изоляции | Default-deny, DNS и frontend→backend TCP 5432 |
+| Сторонний Pod → backend | Доступен | Заблокирован |
+| Failed-пары frontend/backend | 23 | 0 |
 
-Secure-манифесты прошли server-side dry-run; повторные проверки RBAC, Secrets, PSA и сети выполнены успешно. Инструкция запуска — в [README.md](README.md), список проверок — в [REVIEW.md](REVIEW.md).
+[Итоговая проверка](screenshots/evidence/vm/run-20261103/09-final-verification.txt) подтверждает Ready Pod, SA, Secret references, UID, SecurityContext, NetworkPolicy, PSA и применимость всех secure-манифестов через server-side dry-run. Инструкция воспроизведения — в [README.md](README.md).
